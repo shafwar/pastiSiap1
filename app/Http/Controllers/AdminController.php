@@ -3,26 +3,42 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
-    function index()
+    public function index()
     {
-       return view('admin');
+        return $this->authorizeAndLoadDashboard('admin', 'bagianakd.admin');
     }
 
-    function operator()
+    public function kaprodi()
     {
-        return view('admin');
+        return $this->authorizeAndLoadDashboard('kaprodi', 'kaprodi.dashboard');
     }
-    function keuangan()
+
+    public function bagianakd()
     {
-       return view('admin');
+        return $this->authorizeAndLoadDashboard('bagianakd', 'bagianakd.dashboard');
     }
-    function marketing()
+
+    public function marketing()
     {
-      return view('admin'); 
+        return $this->authorizeAndLoadDashboard('marketing', 'akademik.marketing');
+    }
+
+    private function authorizeAndLoadDashboard(string $expectedRole, string $viewName)
+    {
+        // Periksa role pengguna
+        $currentRole = auth()->user()->role;
+
+        if ($currentRole !== $expectedRole) {
+            Log::warning('Akses tidak sah ke: ' . $viewName . '. Role pengguna: ' . $currentRole);
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
+        Log::info('Akses diizinkan ke: ' . $viewName . ' untuk pengguna: ' . auth()->user()->email);
+
+        return view($viewName, ['role' => $expectedRole]);
     }
 }
- 

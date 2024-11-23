@@ -2,25 +2,64 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SesiController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RuangController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
-
-Route::middleware(['guest'])->group(function(){
-    Route::get('/', [SesiController::class, 'index'])->name('login'); 
-    Route::post('/', [SesiController::class, 'login']); 
+// Rute untuk user tamu (belum login)
+Route::middleware(['guest'])->group(function () {
+    Route::get('/', [SesiController::class, 'index'])->name('login'); // Halaman login
+    Route::post('/', [SesiController::class, 'login']); // Proses login
 });
-Route::get('/home',function(){
+
+// Redirect setelah login
+Route::get('/home', function () {
     return redirect('/admin');
+})->name('home.redirect');
 
+// Rute untuk pengguna yang sudah login
+Route::middleware(['auth'])->group(function () {
+    // Rute Admin
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+
+    // Rute CRUD untuk manajemen ruang  
+    Route::prefix('/ruang')->group(function () {
+        Route::get('/', [RuangController::class, 'index'])->name('ruang.index');
+        Route::get('/create', [RuangController::class, 'create'])->name('ruang.create');
+        Route::post('/', [RuangController::class, 'store'])->name('ruang.store');
+        Route::get('/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit');
+        Route::put('/{id}', [RuangController::class, 'update'])->name('ruang.update');
+        Route::delete('/{id}', [RuangController::class, 'destroy'])->name('ruang.destroy');
+    });
+
+    // Rute untuk Kaprodi
+    Route::middleware(['userAkses:kaprodi'])->group(function () {
+        Route::get('/admin/kaprodi', [AdminController::class, 'kaprodi'])->name('kaprodi.dashboard');
+        Route::get('/kaprodi/jadwal-kuliah', function () {
+            return view('kaprodi.jadwal-kuliah');
+        })->name('jadwal.kuliah');
+        Route::get('/kaprodi/verifikasi-irs', function () {
+            return view('kaprodi.verifikasi-irs');
+        })->name('verifikasi.irs');
+    });
+
+    // Rute untuk Bagian Akademik
+    Route::middleware(['userAkses:bagianakd'])->group(function () {
+        Route::get('/admin/bagianakd', [AdminController::class, 'bagianakd'])->name('bagianakd.dashboard');
+    });
+
+    // Rute untuk Marketing
+    Route::middleware(['userAkses:marketing'])->group(function () {
+        Route::get('/admin/marketing', [AdminController::class, 'marketing'])->name('marketing.dashboard');
+    });
+
+    // Logout dengan AuthController
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::middleware(['auth'])->group(function(){
-    Route::get('/admin',[AdminController::class, 'index']);
-    Route::get('/admin/operator',[AdminController::class,'operator'])->middleware('userAkses:operator');
-    Route::get('/admin/keuangan',[AdminController::class,'keuangan'])->middleware('userAkses:keuangan');
-    Route::get('/admin/marketing',[AdminController::class,'marketing'])->middleware('userAkses:marketing');
-    Route::get('/logout',[SesiController::class,'logout']);   
+// Fallback untuk rute yang tidak ditemukan
+Route::fallback(function () {
+    return response()->view('errors.403', [
+        'message' => 'Halaman tidak ditemukan atau Anda tidak memiliki izin untuk mengakses.',
+    ], 403);
 });
-
-

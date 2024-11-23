@@ -120,7 +120,8 @@
       </div>
       @endif
 
-      <form action="" method="POST">
+      <!-- Form Login -->
+      <form action="{{ route('login') }}" method="POST">
         @csrf
         <div class="mb-3 ">
           <input

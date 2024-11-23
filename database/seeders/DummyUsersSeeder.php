@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class DummyUsersSeeder extends Seeder
 {
@@ -12,30 +14,70 @@ class DummyUsersSeeder extends Seeder
      */
     public function run(): void
     {
-$userData = [
-    [
-        'name' => 'Mas operator', 
-        'email' => 'operator@gmail.com',
-        'role' => 'operator', 
-        'password' => bcrypt('123456')
-    ],
-    [
-        'name' => 'Mas Keuangan', 
-        'email' => 'keuangan@gmail.com', 
-        'role' => 'keuangan',  
-        'password' => bcrypt('123456')
-    ],
-    [
-        'name' => 'Mas Marketing', 
-        'email' => 'marketing@gmail.com',
-        'role' => 'marketing', 
-        'password' => bcrypt('123456')
-    ],
-];
+        // Hapus semua data di tabel users
+        DB::table('users')->truncate();
 
+        // Daftar data users
+        $users = [
+            [
+                'name' => 'Bagianakd',
+                'email' => 'bagianakademik@gmail.com',
+                'password' => Hash::make('password_bakd'),
+                'role' => 'bagianakd',                                                                                      
+            ],
+            [
+                'name' => 'Mas Marketing',
+                'email' => 'marketing@gmail.com',
+                'password' => Hash::make('password_marketing'),
+                'role' => 'marketing',
+            ],
+            [
+                'name' => 'Kaprodi',
+                'email' => 'kaprodi@gmail.com',
+                'password' => Hash::make('password_kaprodi'),
+                'role' => 'kaprodi',
+            ],
+            [
+                'name' => 'Mas Keuangan',
+                'email' => 'keuangan@gmail.com',
+                'password' => Hash::make('password_keuangan'),
+                'role' => 'keuangan',
+            ],
+            [
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Kaprodi User',
+                'email' => 'kaprodi@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'kaprodi',
+            ],
+            [
+                'name' => 'Keuangan User',
+                'email' => 'operator@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'operator',
+            ],
+            [
+                'name' => 'Bagianakd User',
+                'email' => 'marketing@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'marketing',
+            ],
+        ];
 
-        foreach ($userData as $key => $val){
-            User::create($val);
+        // Loop untuk memasukkan data jika email belum ada
+        foreach ($users as $user) {
+            if (!DB::table('users')->where('email', $user['email'])->exists()) {
+                DB::table('users')->insert($user);
+                Log::info('Data berhasil ditambahkan: ' . $user['email']);
+            } else {
+                // Log jika email sudah ada
+                Log::warning('Email sudah ada: ' . $user['email']);
+            }
         }
     }
 }
