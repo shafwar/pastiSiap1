@@ -1,31 +1,232 @@
 @extends('layouts.main')
 
-@section('title', 'Dashboard Kaprodi')
+@section('title', 'Dashboard Ketua Program Studi')
 
 @section('content')
-<div class="container mt-5">
-    <h1>Selamat datang di Dashboard Kaprodi</h1>
-    <p>Halo, {{ auth()->user()->name }}! Ini adalah halaman dashboard khusus Kaprodi.</p>
+<div class="container mt-4">
+    <div class="text-end mb-4">
+        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="Keluar dari sistem">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+    </div>
 
-    <!-- Konten tambahan dari kode sebelumnya -->
-    <div class="card mt-4">
-        <div class="card-header bg-success text-white">Informasi Kaprodi</div>
-        <div class="card-body">
-            <p><strong>Nama:</strong> {{ auth()->user()->name }}</p>
-            <p><strong>Email:</strong> {{ auth()->user()->email }}</p>
-            <p><strong>Role:</strong> Kaprodi</p>
-            <p><strong>Fakultas:</strong> {{ auth()->user()->faculty ?? 'Fakultas Tidak Tersedia' }}</p>
+    <div class="row g-4">
+        <!-- Left Section: Dosen Card -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="profile-pic mb-4 position-relative">
+                        <img src="https://via.placeholder.com/70" class="rounded-circle shadow" alt="Profile Picture">
+                        <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2" 
+                              style="width: 20px; height: 20px;" 
+                              data-bs-toggle="tooltip" 
+                              title="Status: Active">
+                        </span>
+                    </div>
+                    <h5 class="card-title fw-bold mb-3">Dosen</h5>
+                    <div class="info-section">
+                        <p class="fw-bold text-dark mb-1">Edgar Alip Mong, Si.</p>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-id-card me-2"></i>240701133456
+                        </p>
+                        <div class="d-flex flex-column gap-2 mt-3">
+                            <p class="mb-1">
+                                <i class="fas fa-envelope me-2 text-primary"></i>
+                                <a href="mailto:edgarbrobro@admin.ac.id" class="text-decoration-none">
+                                    mongsky@gmail.com
+                                </a>
+                            </p>
+                            <p class="mb-1">
+                                <i class="fas fa-envelope-square me-2 text-primary"></i>
+                                <a href="mailto:edgarbrobro@admin.ac.id" class="text-decoration-none">
+                                    mongsky@gmail.com
+                                </a>
+                            </p>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded-3">
+                            <p class="faculty mb-0">
+                                <i class="fas fa-university me-2"></i>
+                                Fakultas Ilmu Sulap Dan Ilmu Sihir
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section: Status Ruang -->
+        <div class="col-md-8">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2 text-primary"></i>
+                            Status Ruang
+                        </h5>
+                        <span class="badge bg-primary">Real-time</span>
+                    </div>
+
+                    <div class="faculty-info p-3 bg-light rounded-3 mb-4">
+                        <p class="mb-0">
+                            <i class="fas fa-university me-2"></i>
+                            <strong>Fakultas:</strong> Ilmu Sulap Dan Ilmu Sihir
+                        </p>
+                    </div>
+
+                    <div class="row g-4 mt-2">
+                        <div class="col-md-4">
+                            <div class="card h-100 bg-primary bg-gradient text-white border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-2x mb-3"></i>
+                                    <h6>Total Kelas</h6>
+                                    <h2 class="mb-0">13</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 bg-success bg-gradient text-white border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-door-open fa-2x mb-3"></i>
+                                    <h6>Kelas Terisi</h6>
+                                    <h2 class="mb-0">8</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 bg-info bg-gradient text-white border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-check-circle fa-2x mb-3"></i>
+                                    <h6>Kelas Tidak Terisi</h6>
+                                    <h2 class="mb-0">4</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Tombol Navigasi -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <a href="{{ route('jadwal.kuliah') }}" class="btn btn-primary btn-block">Jadwal Kuliah</a>
-        </div>
-        <div class="col-md-6">
-            <a href="{{ route('verifikasi.irs') }}" class="btn btn-secondary btn-block">Verifikasi IRS</a>
-        </div>
+<!-- Action Buttons for Kuliah and IRS -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <a href="{{ route('jadwal.kuliah') }}" class="animated-btn jadwal-kuliah w-100">
+            <span class="btn-content">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Jadwal Kuliah
+            </span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="{{ route('verifikasi.irs') }}" class="animated-btn verifikasi-irs w-100">
+            <span class="btn-content">
+                <i class="fas fa-clipboard-check me-2"></i>
+                Verifikasi IRS
+            </span>
+        </a>
     </div>
 </div>
-@endsection
+
+<!-- Add these styles to your existing style section -->
+<style>
+    /* Keep your existing styles and add these new ones */
+    .animated-btn {
+        display: inline-block;
+        width: 100%;
+        padding: 15px 25px;
+        text-align: center;
+        text-decoration: none;
+        color: white;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .jadwal-kuliah {
+        background: linear-gradient(45deg, #4b2327, #6d343a);
+    }
+
+    .verifikasi-irs {
+        background: linear-gradient(45deg, #2c3e50, #3498db);
+    }
+
+    .animated-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+        z-index: -1;
+        transform: translateX(-100%);
+        transition: all 0.3s ease;
+    }
+
+    .animated-btn:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .animated-btn:hover::before {
+        transform: translateX(0);
+    }
+
+    .btn-content {
+        position: relative;
+        z-index: 2;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .animated-btn:hover .btn-content {
+        transform: scale(1.05);
+    }
+
+    .animated-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .animated-btn:hover i {
+        animation: bounce 0.5s ease infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-3px);
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .animated-btn {
+            margin-bottom: 10px;
+            padding: 12px 20px;
+        }
+    }
+
+    /* Additional animation for smooth appearance */
+    .animated-btn {
+        animation: fadeInUp 0.5s ease-out backwards;
+    }
+
+    .jadwal-kuliah {
+        animation-delay: 0.1s;
+    }
+
+    .verifikasi-irs {
+        animation-delay: 0.2s;
+    }
+</style>

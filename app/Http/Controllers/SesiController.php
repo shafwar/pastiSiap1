@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class SesiController extends Controller
 {
@@ -43,9 +43,14 @@ class SesiController extends Controller
 
         // Proses login
         if (Auth::attempt($credentials)) {
+            // Log user berhasil login
+            Log::info('Login berhasil untuk pengguna: ' . Auth::user()->email);
+
             // Ambil role pengguna yang berhasil login
             $role = Auth::user()->role;
 
+            // Debug role untuk verifikasi
+           
             // Atur session berdasarkan role
             session(['showHeader' => $role === 'bagianakd']);
 
@@ -54,6 +59,8 @@ class SesiController extends Controller
         }
 
         // Jika login gagal
+        Log::warning('Percobaan login gagal dengan email: ' . $request->email);
+
         return redirect('/')
             ->withErrors(['login' => 'Email atau password salah.'])
             ->withInput();
@@ -63,19 +70,22 @@ class SesiController extends Controller
      * Logout pengguna.
      */
     public function logout(Request $request)
-{
-    // Proses logout
-    Auth::logout();
+    {
+        // Log proses logout
+        Log::info('Logout dilakukan oleh: ' . Auth::user()->email);
 
-    // Bersihkan semua sesi
-    $request->session()->invalidate();
+        // Proses logout
+        Auth::logout();
 
-    // Regenerate session token untuk keamanan
-    $request->session()->regenerateToken();
+        // Bersihkan semua sesi
+        $request->session()->invalidate();
 
-    // Redirect ke halaman login
-    return redirect('/')->with('status', 'Logout berhasil.');
-}
+        // Regenerate session token untuk keamanan
+        $request->session()->regenerateToken();
+
+        // Redirect ke halaman login
+        return redirect('/')->with('status', 'Logout berhasil.');
+    }
 
     /**
      * Redirect berdasarkan role pengguna.

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,6 +12,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(DummyUsersSeeder::class);
+        try {
+            // Panggil seeder untuk Dummy Users
+            $this->call(DummyUsersSeeder::class);
+
+            // Tambahkan log untuk memastikan seeder berhasil dijalankan
+            Log::info('DatabaseSeeder dijalankan. Seeder DummyUsersSeeder berhasil dipanggil.');
+        } catch (\Exception $e) {
+            // Tangani error jika terjadi masalah saat menjalankan seeder
+            Log::error('DatabaseSeeder gagal dijalankan. Error: ' . $e->getMessage());
+        }
     }
 }

@@ -22,7 +22,7 @@ class DummyUsersSeeder extends Seeder
             [
                 'name' => 'Bagianakd',
                 'email' => 'bagianakademik@gmail.com',
-                'password' => Hash::make('password_bakd'),
+                'password' => Hash::make('123456'),
                 'role' => 'bagianakd',                                                                                      
             ],
             [

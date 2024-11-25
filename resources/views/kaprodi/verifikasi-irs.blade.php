@@ -1,10 +1,10 @@
- @extends('layout')
+@extends('layout')
 
 @section('title', 'Verifikasi IRS')
 
 @section('content')
 <div class="container">
-    <h1 class="text-center my-4">Verifikasi IRS</h1>
-    <p class="text-center">Halaman Verifikasi IRS untuk Kaprodi.</p>
+    <h1>Verifikasi IRS</h1>
+    <p>Halaman ini menampilkan formulir verifikasi IRS.</p>
 </div>
 @endsection
