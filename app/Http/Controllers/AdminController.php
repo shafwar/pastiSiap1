@@ -22,9 +22,9 @@ class AdminController extends Controller
         return $this->authorizeAndLoadDashboard('bagianakd', 'bagianakd.dashboard');
     }
 
-    public function marketing()
+    public function dekan()
     {
-        return $this->authorizeAndLoadDashboard('marketing', 'akademik.marketing');
+        return $this->authorizeAndLoadDashboard('dekan', 'dekan.dashboard');
     }
 
     private function authorizeAndLoadDashboard(string $expectedRole, string $viewName)

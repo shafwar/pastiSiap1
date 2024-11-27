@@ -53,6 +53,7 @@ class SesiController extends Controller
            
             // Atur session berdasarkan role
             session(['showHeader' => $role === 'bagianakd']);
+            session(['showHeader' => $role === 'dekan']);
 
             // Redirect berdasarkan role pengguna
             return $this->redirectByRole($role);
@@ -96,6 +97,7 @@ class SesiController extends Controller
             'bagianakd' => redirect('admin/bagianakd'),
             'kaprodi' => redirect('admin/kaprodi'),
             'marketing' => redirect('admin/marketing'),
+            'dekan' => redirect('admin/dekan'),
             default => redirect('/')->withErrors('Role tidak dikenal.'),
         };
     }

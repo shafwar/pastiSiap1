@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Ruang; // Pastikan model Ruang diimport
-use Illuminate\Support\Facades\DB; // Import DB untuk query builder
+use App\Models\Ruang;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RuangController extends Controller
@@ -15,14 +15,12 @@ class RuangController extends Controller
     public function index()
     {
         try {
-            // Mengambil data dari tabel 'ruangs' menggunakan Query Builder
+            // Mengambil data dari tabel 'ruangs'
             $ruangs = DB::table('ruangs')->get();
 
             // Mengirim data ke view
             return view('bagianakd.ruang', compact('ruangs')); // Menampilkan data di view
-
         } catch (\Exception $e) {
-            // Tangani error jika terjadi kesalahan saat mengambil data
             return redirect()->back()->withErrors(['error' => 'Gagal mengambil data ruang: ' . $e->getMessage()]);
         }
     }
@@ -44,25 +42,20 @@ class RuangController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi data input
+        // Validasi data input dari form
         $validator = Validator::make($request->all(), [
-            'kode' => 'required|unique:ruangs,kode|max:10',
+            'kode' => 'required|string|unique:ruangs,kode|max:10',
             'kapasitas' => 'required|integer|min:1|max:100',
-            'status' => 'required|in:Tersedia,Belum Disetujui',
-            'lantai' => 'required|integer|min:1',
-            'jenis_ruang' => 'required|string|max:255',
-            // Hapus validasi fasilitas dan last_maintenance
+            'prodi' => 'required|string|max:50',
         ], [
             'kode.required' => 'Kode ruang wajib diisi.',
             'kode.unique' => 'Kode ruang sudah ada.',
             'kapasitas.required' => 'Kapasitas wajib diisi.',
             'kapasitas.integer' => 'Kapasitas harus berupa angka.',
-            'status.required' => 'Status wajib dipilih.',
-            'status.in' => 'Status tidak valid.',
-            'lantai.required' => 'Lantai wajib diisi.',
-            'jenis_ruang.required' => 'Jenis ruang wajib diisi.',
+            'prodi.required' => 'Prodi wajib diisi.',
         ]);
 
+        // Jika validasi gagal, kembalikan ke halaman sebelumnya dengan error
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -70,11 +63,18 @@ class RuangController extends Controller
         }
 
         try {
-            // Simpan data ke database tanpa fasilitas dan last_maintenance
-            $data = $request->except(['fasilitas', 'last_maintenance']); // Menghapus fasilitas dan last_maintenance
-            Ruang::create($data);
-            return redirect()->route('ruang.index')->with('success', 'Ruang berhasil ditambahkan.');
+            // Simpan data ke tabel 'ruangs'
+            Ruang::create([
+                'kode' => $request->kode,
+                'kapasitas' => $request->kapasitas,
+                'status' => 'Tidak Disetujui',
+                'prodi' => $request->prodi,
+            ]);
+
+            // Redirect ke halaman index dengan pesan sukses
+            return redirect()->route('ruang.index')->with('success', 'Ruang berhasil ditambahkan!');
         } catch (\Exception $e) {
+            // Tangani error jika ada kesalahan saat menyimpan data
             return redirect()->back()->withErrors(['error' => 'Gagal menyimpan ruang: ' . $e->getMessage()])->withInput();
         }
     }
@@ -97,23 +97,11 @@ class RuangController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validasi data input
+        // Validasi input
         $validator = Validator::make($request->all(), [
-            'kode' => 'required|max:10|unique:ruangs,kode,' . $id,
-            'kapasitas' => 'required|integer|min:1|max:100',
-            'status' => 'required|in:Tersedia,Belum Disetujui',
-            'lantai' => 'required|integer|min:1',
-            'jenis_ruang' => 'required|string|max:255',
-            // Hapus validasi fasilitas dan last_maintenance
+            'prodi' => 'required|string|max:255',
         ], [
-            'kode.required' => 'Kode ruang wajib diisi.',
-            'kode.unique' => 'Kode ruang sudah ada.',
-            'kapasitas.required' => 'Kapasitas wajib diisi.',
-            'kapasitas.integer' => 'Kapasitas harus berupa angka.',
-            'status.required' => 'Status wajib dipilih.',
-            'status.in' => 'Status tidak valid.',
-            'lantai.required' => 'Lantai wajib diisi.',
-            'jenis_ruang.required' => 'Jenis ruang wajib diisi.',
+            'prodi.required' => 'Program Studi wajib diisi.',
         ]);
 
         if ($validator->fails()) {
@@ -123,16 +111,16 @@ class RuangController extends Controller
         }
 
         try {
-            // Update data di database tanpa fasilitas dan last_maintenance
+            // Cari ruang berdasarkan ID dan update program studi
             $ruang = Ruang::findOrFail($id);
-            $data = $request->except(['fasilitas', 'last_maintenance']); // Menghapus fasilitas dan last_maintenance
-            $ruang->update($data);
-            return redirect()->route('ruang.index')->with('success', 'Ruang berhasil diperbarui.');
+            $ruang->update(['prodi' => $request->prodi]);
+
+            return redirect()->route('ruang.index')->with('success', 'Program Studi berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Gagal memperbarui ruang: ' . $e->getMessage()])->withInput();
+            return redirect()->route('ruang.index')->withErrors(['error' => 'Gagal memperbarui data ruang: ' . $e->getMessage()]);
         }
     }
-
+    
     /**
      * Menghapus data ruang dari database.
      */
@@ -142,7 +130,7 @@ class RuangController extends Controller
             $ruang = Ruang::findOrFail($id); // Cari data berdasarkan ID
             $ruang->delete(); // Hapus data
 
-            return redirect()->route('ruang.index')->with('success', 'Ruang berhasil dihapus.');
+            return redirect()->route('ruang.index')->with('success', 'Ruang berhasil dihapus!');
         } catch (\Exception $e) {
             return redirect()->route('ruang.index')->withErrors(['error' => 'Gagal menghapus ruang: ' . $e->getMessage()]);
         }

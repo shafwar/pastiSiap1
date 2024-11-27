@@ -22,7 +22,8 @@ class Ruang extends Model
     protected $fillable = [
         'kode',        // Kode ruang, misalnya A101
         'kapasitas',   // Kapasitas ruang, misalnya 40
-        'status',      // Status ruang, misalnya Tersedia atau Belum Disetujui
+        'status',      // Status ruang, misalnya Available atau Unavailable
+        'prodi',       // Program studi yang menggunakan ruang, misalnya Informatika
     ];
 
     /**

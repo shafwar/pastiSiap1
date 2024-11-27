@@ -17,13 +17,13 @@ class DummyUsersSeeder extends Seeder
         // Hapus semua data di tabel users
         DB::table('users')->truncate();
 
-        // Daftar data users
+        // Daftar data users, termasuk role 'dekan'
         $users = [
             [
                 'name' => 'Bagianakd',
                 'email' => 'bagianakademik@gmail.com',
                 'password' => Hash::make('123456'),
-                'role' => 'bagianakd',                                                                                      
+                'role' => 'bagianakd',
             ],
             [
                 'name' => 'Mas Marketing',
@@ -43,29 +43,12 @@ class DummyUsersSeeder extends Seeder
                 'password' => Hash::make('password_keuangan'),
                 'role' => 'keuangan',
             ],
+            // Menambahkan pengguna dengan role 'dekan'
             [
-                'name' => 'Admin User',
-                'email' => 'admin@example.com',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-            ],
-            [
-                'name' => 'Kaprodi User',
-                'email' => 'kaprodi@example.com',
-                'password' => Hash::make('password'),
-                'role' => 'kaprodi',
-            ],
-            [
-                'name' => 'Keuangan User',
-                'email' => 'operator@example.com',
-                'password' => Hash::make('password'),
-                'role' => 'operator',
-            ],
-            [
-                'name' => 'Bagianakd User',
-                'email' => 'marketing@example.com',
-                'password' => Hash::make('password'),
-                'role' => 'marketing',
+                'name' => 'Dekan',
+                'email' => 'dekan@gmail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'dekan',
             ],
         ];
 

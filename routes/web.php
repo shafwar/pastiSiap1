@@ -5,6 +5,7 @@ use App\Http\Controllers\SesiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RuangController;
 use App\Http\Controllers\KaprodiController;
+use App\Http\Controllers\DekanController; // Tambahkan controller untuk Dekan
 use Illuminate\Support\Facades\Route;
 
 // Rute untuk user tamu (belum login)
@@ -20,6 +21,7 @@ Route::get('/home', function () {
 
 // Rute untuk pengguna yang sudah login
 Route::middleware(['auth'])->group(function () {
+
     // Rute Admin
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
@@ -38,19 +40,31 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/bagianakd', [AdminController::class, 'bagianakd'])->name('bagianakd.dashboard');
 
         // Rute untuk CRUD Ruang
-        Route::prefix('/bagianakd/ruang')->middleware(['auth'])->group(function () {
-            Route::get('/', [RuangController::class, 'index'])->name('ruang.index');
-            Route::get('/create', [RuangController::class, 'create'])->name('ruang.create');
-            Route::post('/', [RuangController::class, 'store'])->name('ruang.store');
-            Route::get('/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit');
-            Route::put('/{id}', [RuangController::class, 'update'])->name('ruang.update');
-            Route::delete('/{id}', [RuangController::class, 'destroy'])->name('ruang.destroy');
+        Route::prefix('/bagianakd/ruang')->group(function () {
+            Route::get('/', [RuangController::class, 'index'])->name('ruang.index'); // Halaman daftar ruang
+            Route::get('/create', [RuangController::class, 'create'])->name('ruang.create'); // Halaman form tambah ruang
+            Route::post('/', [RuangController::class, 'store'])->name('ruang.store'); // Proses tambah ruang
+            // Rute Edit Ruang
+            Route::get('/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit'); // Halaman edit ruang
+            // Rute Update Ruang
+            Route::put('/{id}', [RuangController::class, 'update'])->name('ruang.update'); // Proses update ruang
+            Route::delete('/{id}', [RuangController::class, 'destroy'])->name('ruang.destroy'); // Proses hapus ruang
         });
     });
 
     // Rute untuk Marketing
     Route::middleware(['userAkses:marketing'])->group(function () {
         Route::get('/admin/marketing', [AdminController::class, 'marketing'])->name('marketing.dashboard');
+    });
+
+    // Rute untuk Dekan
+    Route::middleware(['userAkses:dekan'])->group(function () {
+        // Dashboard Dekan
+        Route::get('/admin/dekan', [AdminController::class, 'dekan'])->name('dekan.dashboard');
+        
+        // Contoh rute tambahan untuk Dekan
+        Route::get('/dekan/laporan', [DekanController::class, 'laporan'])->name('dekan.laporan');
+        Route::get('/dekan/approvals', [DekanController::class, 'approvals'])->name('dekan.approvals');
     });
 
     // Logout dengan AuthController

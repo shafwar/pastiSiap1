@@ -4,22 +4,65 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class RuangSeeder extends Seeder
 {
     /**
-     * List of possible room statuses
+     * List of room data to seed.
+     *
      * @var array
      */
-    protected $statuses = ['Tersedia', 'Belum Disetujui', 'Dalam Perbaikan', 'Digunakan'];
-
-    /**
-     * List of possible building codes
-     * @var array
-     */
-    protected $buildings = ['A', 'B', 'C', 'D', 'E'];
+    protected $rooms = [
+        [
+            'kode' => 'A103',
+            'kapasitas' => 40,
+            'status' => 'Disetujui',
+            'prodi' => 'Informatika',
+        ],
+        [
+            'kode' => 'A102',
+            'kapasitas' => 40,
+            'status' => 'Disetujui',
+            'prodi' => 'Sistem Informasi',
+        ],
+        [
+            'kode' => 'A303',
+            'kapasitas' => 40,
+            'status' => 'Disetujui',
+            'prodi' => 'Teknik Elektro',
+        ],
+        [
+            'kode' => 'B301',
+            'kapasitas' => 40,
+            'status' => 'Disetujui',
+            'prodi' => 'Teknik Mesin',
+        ],
+        [
+            'kode' => 'B102',
+            'kapasitas' => 40,
+            'status' => 'Tidak Disetujui',
+            'prodi' => 'Teknik Sipil',
+        ],
+        [
+            'kode' => 'E303',
+            'kapasitas' => 40,
+            'status' => 'Tidak Disetujui',
+            'prodi' => 'Arsitektur',
+        ],
+        [
+            'kode' => 'C101',
+            'kapasitas' => 30,
+            'status' => 'Tidak Disetujui',
+            'prodi' => 'Teknik Lingkungan',
+        ],
+        [
+            'kode' => 'D201',
+            'kapasitas' => 25,
+            'status' => 'Tidak Disetujui',
+            'prodi' => 'Desain Interior',
+        ],
+    ];
 
     /**
      * Run the database seeds.
@@ -28,125 +71,42 @@ class RuangSeeder extends Seeder
      */
     public function run()
     {
-        // Existing data with additional metadata
-        $existingRooms = [
-            [
-                'kode' => 'A103',
-                'kapasitas' => 40,
-                'status' => 'Tersedia',
-                'lantai' => 1,
-                'jenis_ruang' => 'Kelas Reguler',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'A102',
-                'kapasitas' => 40,
-                'status' => 'Belum Disetujui',
-                'lantai' => 1,
-                'jenis_ruang' => 'Kelas Reguler',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'A303',
-                'kapasitas' => 40,
-                'status' => 'Tersedia',
-                'lantai' => 3,
-                'jenis_ruang' => 'Laboratorium',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'B301',
-                'kapasitas' => 40,
-                'status' => 'Belum Disetujui',
-                'lantai' => 3,
-                'jenis_ruang' => 'Kelas Reguler',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'B102',
-                'kapasitas' => 40,
-                'status' => 'Belum Disetujui',
-                'lantai' => 1,
-                'jenis_ruang' => 'Auditorium',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'E303',
-                'kapasitas' => 40,
-                'status' => 'Tersedia',
-                'lantai' => 3,
-                'jenis_ruang' => 'Kelas Reguler',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
-
-        // Additional new rooms
-        $additionalRooms = [
-            [
-                'kode' => 'C101',
-                'kapasitas' => 30,
-                'status' => 'Tersedia',
-                'lantai' => 1,
-                'jenis_ruang' => 'Kelas Multimedia',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'D201',
-                'kapasitas' => 25,
-                'status' => 'Dalam Perbaikan',
-                'lantai' => 2,
-                'jenis_ruang' => 'Lab Komputer',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
-
         try {
-            // Combine existing and new rooms
-            $allRooms = array_merge($existingRooms, $additionalRooms);
+            DB::beginTransaction(); // Start database transaction
 
-            // Insert all rooms in a transaction
-            DB::beginTransaction();
-
-            foreach ($allRooms as $room) {
-                // Validate room code format
+            foreach ($this->rooms as $room) {
+                // Validate room code
                 if (!$this->isValidRoomCode($room['kode'])) {
                     throw new \Exception("Invalid room code format: {$room['kode']}");
                 }
+
+                // Add timestamps to each room data
+                $room['created_at'] = now();
+                $room['updated_at'] = now();
 
                 // Insert room data
                 DB::table('ruangs')->insert($room);
             }
 
-            DB::commit();
-            
-            // Log success message
-            Log::info('Room seeding completed successfully. Total rooms: ' . count($allRooms));
+            DB::commit(); // Commit the transaction
 
+            Log::info('Room seeding completed successfully. Total rooms: ' . count($this->rooms));
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Rollback the transaction if an error occurs
             Log::error('Room seeding failed: ' . $e->getMessage());
             throw $e;
         }
     }
 
     /**
-     * Validate room code format (Building Letter + Floor Number + Room Number)
+     * Validate room code format (Building Letter + Floor Number + Room Number).
      *
      * @param string $code
      * @return bool
      */
-    protected function isValidRoomCode($code)
+    protected function isValidRoomCode(string $code): bool
     {
-        // Format validation: Letter + 3 digits
-        return preg_match('/^[A-E][0-9]{3}$/', $code) 
-            && in_array(substr($code, 0, 1), $this->buildings);
+        // Validate format: Letter A-E + 3 digits (e.g., A101)
+        return preg_match('/^[A-E][0-9]{3}$/', $code);
     }
 }
