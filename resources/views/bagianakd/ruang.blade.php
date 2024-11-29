@@ -177,18 +177,87 @@
             background-color: #ffebee;
             color: #c62828;
         }
+
+        /* Animasi untuk tombol logout */
+        .btn-danger {
+            position: relative;
+            overflow: hidden;
+            background-color: #4b2327;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: transform 0.4s ease, box-shadow 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .btn-danger:hover {
+            background-color: #6c2e36;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .btn-danger:hover::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="sidebar">
-        <h1>Menu</h1>
-        <ul>
-            <li><a href="{{ route('ruang.index') }}">Data Ruang</a></li>
-            <li><a href="{{ route('ruang.create') }}">Tambah Ruang</a></li>
-            <li><a href="#">Lainnya</a></li>
-        </ul>
-    </div>
+<div class="sidebar">
+    <h1>PASTI SIAP</h1>
+    <ul class="nav flex-column">
+        <!-- Dashboard Link -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('bagianakd.dashboard') }}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </li>
+        
+        <!-- Manajemen Ruang Link -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('ruang.create') }}">
+                <i class="fas fa-cogs"></i> Manajemen Ruang
+            </a>
+        </li>
+
+        <!-- Logout Button -->
+        <li class="mt-auto">
+            <form action="{{ route('logout') }}" method="POST" class="mt-5">
+                @csrf
+                <button type="submit" class="btn btn-danger w-100">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
 
     <div class="main-content">
         <header>
@@ -235,16 +304,50 @@
                         <td>{{ $ruang->kode }}</td>
                         <td>{{ $ruang->kapasitas }}</td>
                         <td>
-                            <span
-                                class="status-badge {{ strtolower($ruang->status) == 'available' ? 'status-available' : 'status-unavailable' }}">
-                                {{ strtolower($ruang->status) == 'available' ? 'Disetujui' : 'Tidak Disetujui' }}
+                            <span class="status-badge {{ strtolower($ruang->status) == 'disetujui' ? 'status-available' : 'status-unavailable' }}">
+                                {{ strtolower($ruang->status) == 'disetujui' ? 'Disetujui' : 'Tidak Disetujui' }}
                             </span>
                         </td>
                         <td>{{ $ruang->prodi }}</td>
                         <td>
-                            <button class="btn btn-warning" onclick="ajukanRuang({{ $ruang->id }})">Ajukan</button>
+                            <!-- Logic based on user role -->
+                            @if(auth()->user()->role == 'bagianakd')
+                                <!-- Bagian Akademik: hanya bisa mengajukan ulang jika status tidak disetujui -->
+                                @if($ruang->status == 'Tidak Disetujui')
+                                    <form action="{{ route('ruang.ajukanUlang', $ruang->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success">Ajukan</button>
+                                    </form>
+                                @else
+                                    <span class="badge badge-secondary">Sudah Diajukan</span>
+                                @endif
+                            @elseif(auth()->user()->role == 'dekan')
+                                <!-- Dekan: bisa menyetujui atau menolak -->
+                                @if($ruang->status == 'Tidak Disetujui')
+                                    <form action="{{ route('ruang.toggleStatus', $ruang->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success">Setujui</button>
+                                    </form>
+                                    <form action="{{ route('ruang.reject', $ruang->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-danger">Tolak</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('ruang.toggleStatus', $ruang->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-danger">Tandai Tidak Disetujui</button>
+                                    </form>
+                                @endif
+                            @endif
+
+                            <!-- Tombol Edit -->
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal"
                                 onclick="editRuang({{ $ruang->id }}, '{{ $ruang->prodi }}')">Edit</button>
+
+                            <!-- Tombol Hapus -->
                             <form action="{{ route('ruang.destroy', $ruang->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -259,7 +362,8 @@
             </table>
         </div>
     </div>
-   <!-- Modal Edit Program Studi -->
+
+    <!-- Modal Edit Program Studi -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -285,7 +389,7 @@
     </div>
 
     <script>
-        // Function to handle "Ajukan" button
+        // Function to handle "Ajukan" button with SweetAlert confirmation
         function ajukanRuang(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
@@ -296,42 +400,13 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // You can perform an AJAX call here or a form submission
-                    Swal.fire('Ruang Diajukan!', '', 'success');
+                    // Proceed with the form submission
+                    document.querySelector('form[action*="' + id + '"]').submit();
                 }
             });
         }
 
         // Function to handle "Edit" button
-        function editRuang(id, prodi) {
-            // Set the action URL and fill in the existing prodi in the modal
-            document.getElementById('editForm').action = '/bagianakd/ruang/' + id;
-            document.getElementById('prodi').value = prodi;
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
-
-
-    <script>
-        function ajukanRuang(id) {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda ingin mengajukan ruang ini?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('Ruang Diajukan!', '', 'success');
-                }
-            });
-        }
-
         function editRuang(id, prodi) {
             document.getElementById('editForm').action = '/bagianakd/ruang/' + id;
             document.getElementById('prodi').value = prodi;

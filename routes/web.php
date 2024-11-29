@@ -46,9 +46,15 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/', [RuangController::class, 'store'])->name('ruang.store'); // Proses tambah ruang
             // Rute Edit Ruang
             Route::get('/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit'); // Halaman edit ruang
-            // Rute Update Ruang
+            // Rute Update Ruang    
             Route::put('/{id}', [RuangController::class, 'update'])->name('ruang.update'); // Proses update ruang
             Route::delete('/{id}', [RuangController::class, 'destroy'])->name('ruang.destroy'); // Proses hapus ruang
+
+            // Rute untuk mengajukan ruang (Bagi Bagian Akademik)
+            Route::post('/ajukan/{id}', [RuangController::class, 'ajukanRuang'])->name('ruang.ajukan'); // Mengajukan ruang untuk disetujui
+
+            // **Rute untuk Pengajuan Ulang Ruang** - Rute ini memungkinkan Bagian Akademik untuk mengajukan ulang ruang
+            Route::post('/ajukan-ulang/{id}', [RuangController::class, 'ajukanUlang'])->name('ruang.ajukanUlang'); // Pengajuan ulang ruang
         });
     });
 
@@ -62,9 +68,18 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard Dekan
         Route::get('/admin/dekan', [AdminController::class, 'dekan'])->name('dekan.dashboard');
         
-        // Contoh rute tambahan untuk Dekan
-        Route::get('/dekan/laporan', [DekanController::class, 'laporan'])->name('dekan.laporan');
+        // Dekan
+        Route::get('dekan/ruang', [DekanController::class, 'ruang'])->name('dekan.ruang');
         Route::get('/dekan/approvals', [DekanController::class, 'approvals'])->name('dekan.approvals');
+        
+        // Rute untuk persetujuan ruang
+        Route::post('/dekan/approve/{id}', [RuangController::class, 'approve'])->name('dekan.approve'); // Aksi persetujuan ruang
+
+        // Rute untuk mengubah status ruang (Disetujui / Tidak Disetujui)
+        Route::put('/dekan/ruang/status/{id}', [RuangController::class, 'toggleStatus'])->name('ruang.toggleStatus'); // Mengubah status ruang
+
+        // **Rute untuk Menolak Ruang** - Menambahkan rute penolakan ruang oleh Dekan
+        Route::post('/dekan/reject/{id}', [RuangController::class, 'reject'])->name('dekan.reject'); // Aksi penolakan ruang
     });
 
     // Logout dengan AuthController

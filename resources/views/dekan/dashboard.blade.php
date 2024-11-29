@@ -121,7 +121,7 @@
         </a>
     </div>
     <div class="col-md-6">
-        <a href="{{ route('ruang.index') }}" class="animated-btn ruang w-100">
+        <a href="{{ route('dekan.ruang') }}" class="animated-btn ruang w-100">
             <span class="btn-content">
                 <i class="fas fa-clipboard-check me-2"></i>
                 RUANG
