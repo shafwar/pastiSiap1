@@ -406,7 +406,7 @@
             });
         }
 
-        // Function to handle "Edit" button heheheh
+        // Function to handle "Edit" button
         function editRuang(id, prodi) {
             document.getElementById('editForm').action = '/bagianakd/ruang/' + id;
             document.getElementById('prodi').value = prodi;
