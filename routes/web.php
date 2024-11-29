@@ -5,7 +5,7 @@ use App\Http\Controllers\SesiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RuangController;
 use App\Http\Controllers\KaprodiController;
-use App\Http\Controllers\DekanController; // Tambahkan controller untuk Dekan
+use App\Http\Controllers\DekanController; // Controller untuk Dekan
 use Illuminate\Support\Facades\Route;
 
 // Rute untuk user tamu (belum login)
@@ -53,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
             // Rute untuk mengajukan ruang (Bagi Bagian Akademik)
             Route::post('/ajukan/{id}', [RuangController::class, 'ajukanRuang'])->name('ruang.ajukan'); // Mengajukan ruang untuk disetujui
 
-            // **Rute untuk Pengajuan Ulang Ruang** - Rute ini memungkinkan Bagian Akademik untuk mengajukan ulang ruang
+            // Rute untuk Pengajuan Ulang Ruang
             Route::post('/ajukan-ulang/{id}', [RuangController::class, 'ajukanUlang'])->name('ruang.ajukanUlang'); // Pengajuan ulang ruang
         });
     });
@@ -68,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard Dekan
         Route::get('/admin/dekan', [AdminController::class, 'dekan'])->name('dekan.dashboard');
         
-        // Dekan
+        // Rute Dekan
         Route::get('dekan/ruang', [DekanController::class, 'ruang'])->name('dekan.ruang');
         Route::get('/dekan/approvals', [DekanController::class, 'approvals'])->name('dekan.approvals');
         
@@ -78,7 +78,7 @@ Route::middleware(['auth'])->group(function () {
         // Rute untuk mengubah status ruang (Disetujui / Tidak Disetujui)
         Route::put('/dekan/ruang/status/{id}', [RuangController::class, 'toggleStatus'])->name('ruang.toggleStatus'); // Mengubah status ruang
 
-        // **Rute untuk Menolak Ruang** - Menambahkan rute penolakan ruang oleh Dekan
+        // Rute untuk Menolak Ruang
         Route::post('/dekan/reject/{id}', [RuangController::class, 'reject'])->name('dekan.reject'); // Aksi penolakan ruang
     });
 
