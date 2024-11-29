@@ -34,7 +34,7 @@ class DummyUsersSeeder extends Seeder
             [
                 'name' => 'Kaprodi',
                 'email' => 'kaprodi@gmail.com',
-                'password' => Hash::make('password_kaprodi'),
+                'password' => Hash::make('123456'),
                 'role' => 'kaprodi',
             ],
             [

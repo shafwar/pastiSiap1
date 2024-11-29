@@ -32,13 +32,7 @@
                     <input type="text" name="prodi" class="form-control" value="{{ old('prodi', $ruang->prodi) }}" required>
                 </div>
                 
-                <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" class="form-control" required>
-                        <option value="Available" {{ $ruang->status == 'Available' ? 'selected' : '' }}>Available</option>
-                        <option value="Unavailable" {{ $ruang->status == 'Unavailable' ? 'selected' : '' }}>Unavailable</option>
-                    </select>
-                </div>
+                
 
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 <a href="{{ route('ruang.index') }}" class="btn btn-secondary">Batal</a>
