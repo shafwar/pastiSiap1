@@ -20,7 +20,8 @@ class AdminController extends Controller
     {
        return view('admin');
     }
-    function marketing()
+
+    private function authorizeAndLoadDashboard(string $expectedRole, string $viewName)
     {
       return view('admin'); 
     }

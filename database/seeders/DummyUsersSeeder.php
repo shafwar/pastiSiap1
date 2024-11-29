@@ -12,26 +12,60 @@ class DummyUsersSeeder extends Seeder
      */
     public function run(): void
     {
-$userData = [
-    [
-        'name' => 'Mas operator', 
-        'email' => 'operator@gmail.com',
-        'role' => 'operator', 
-        'password' => bcrypt('123456')
-    ],
-    [
-        'name' => 'Mas Keuangan', 
-        'email' => 'keuangan@gmail.com', 
-        'role' => 'keuangan',  
-        'password' => bcrypt('123456')
-    ],
-    [
-        'name' => 'Mas Marketing', 
-        'email' => 'marketing@gmail.com',
-        'role' => 'marketing', 
-        'password' => bcrypt('123456')
-    ],
-];
+        // Hapus semua data di tabel users
+        DB::table('users')->truncate();
+
+        // Daftar data users
+        $users = [
+            [
+                'name' => 'Bagianakd',
+                'email' => 'bagianakademik@gmail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'bagianakd',                                                                                      
+            ],
+            [
+                'name' => 'Mas Marketing',
+                'email' => 'marketing@gmail.com',
+                'password' => Hash::make('password_marketing'),
+                'role' => 'marketing',
+            ],
+            [
+                'name' => 'Kaprodi',
+                'email' => 'kaprodi@gmail.com',
+                'password' => Hash::make('password_kaprodi'),
+                'role' => 'kaprodi',
+            ],
+            [
+                'name' => 'Mas Keuangan',
+                'email' => 'keuangan@gmail.com',
+                'password' => Hash::make('password_keuangan'),
+                'role' => 'keuangan',
+            ],
+            [
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Kaprodi User',
+                'email' => 'kaprodi@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'kaprodi',
+            ],
+            [
+                'name' => 'Keuangan User',
+                'email' => 'operator@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'operator',
+            ],
+            [
+                'name' => 'Bagianakd User',
+                'email' => 'marketing@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'marketing',
+            ],
+        ];
 
 
         foreach ($userData as $key => $val){

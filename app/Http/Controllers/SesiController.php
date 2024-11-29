@@ -36,16 +36,47 @@ class SesiController extends Controller
         } elseif (Auth::user()->role == 'marketing') {         
           return redirect('admin/marketing');
         }
-      
-      } else {
-          return redirect('')->withErrors('Username dan password yang dimasukan tidak sesuai')->withInput();
-        
-      }
+
+        // Jika login gagal
+        Log::warning('Percobaan login gagal dengan email: ' . $request->email);
+
+        return redirect('/')
+            ->withErrors(['login' => 'Email atau password salah.'])
+            ->withInput();
     }
 
-    function logout(){
-      Auth::logout();
-      return redirect('/');
+    /**
+     * Logout pengguna.
+     */
+    public function logout(Request $request)
+    {
+        // Log proses logout
+        Log::info('Logout dilakukan oleh: ' . Auth::user()->email);
+
+        // Proses logout
+        Auth::logout();
+
+        // Bersihkan semua sesi
+        $request->session()->invalidate();
+
+        // Regenerate session token untuk keamanan
+        $request->session()->regenerateToken();
+
+        // Redirect ke halaman login
+        return redirect('/')->with('status', 'Logout berhasil.');
+    }
+
+    /**
+     * Redirect berdasarkan role pengguna.
+     */
+    private function redirectByRole($role)
+    {
+        return match ($role) {
+            'bagianakd' => redirect('admin/bagianakd'),
+            'kaprodi' => redirect('admin/kaprodi'),
+            'marketing' => redirect('admin/marketing'),
+            default => redirect('/')->withErrors('Role tidak dikenal.'),
+        };
     }
 }
   
