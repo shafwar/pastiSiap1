@@ -10,6 +10,7 @@
         integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* Global Styling */
         * {
             margin: 0;
             padding: 0;
@@ -25,6 +26,7 @@
             overflow-x: hidden;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background: linear-gradient(135deg, #4b2327 0%, #6b3338 100%);
@@ -69,6 +71,7 @@
             transform: translateX(10px);
         }
 
+        /* Main Content */
         .main-content {
             flex: 1;
             padding: 30px;
@@ -76,6 +79,7 @@
             background-color: #f8f9fa;
         }
 
+        /* Form Styling */
         .filter-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -113,17 +117,7 @@
             background-color: #6b3338;
         }
 
-        .delete-button {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .delete-button img {
-            width: 20px;
-            height: 20px;
-        }
-
+        /* Table Styling */
         .table-container {
             background-color: white;
             border-radius: 15px;
@@ -178,26 +172,24 @@
             color: #c62828;
         }
 
-        /* Animasi untuk tombol logout */
-        .btn-danger {
+        /* Button Hover Effects */
+        .btn-danger, .btn-primary {
             position: relative;
             overflow: hidden;
-            background-color: #4b2327;
             border: none;
+            color: white;
             padding: 10px 20px;
-            text-transform: uppercase;
+            border-radius: 8px;
             font-weight: bold;
             transition: transform 0.4s ease, box-shadow 0.3s ease;
-            border-radius: 8px;
         }
 
-        .btn-danger:hover {
-            background-color: #6c2e36;
+        .btn-danger:hover, .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-danger::after {
+        .btn-danger::after, .btn-primary::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -211,7 +203,7 @@
             transform-origin: 50% 50%;
         }
 
-        .btn-danger:hover::after {
+        .btn-danger:hover::after, .btn-primary:hover::after {
             animation: ripple 1s ease-out;
         }
 
@@ -230,63 +222,54 @@
 </head>
 
 <body>
-<div class="sidebar">
-    <h1>PASTI SIAP</h1>
-    <ul class="nav flex-column">
-        <!-- Dashboard Link -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('bagianakd.dashboard') }}">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </a>
-        </li>
-        
-        <!-- Manajemen Ruang Link -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('ruang.create') }}">
-                <i class="fas fa-cogs"></i> Manajemen Ruang
-            </a>
-        </li>
 
-        <!-- Logout Button -->
-        <li class="mt-auto">
-            <form action="{{ route('logout') }}" method="POST" class="mt-5">
-                @csrf
-                <button type="submit" class="btn btn-danger w-100">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </form>
-        </li>
-    </ul>
-</div>
+    <div class="sidebar">
+        <h1>PASTI SIAP</h1>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bagianakd.dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('ruang.create') }}">
+                    <i class="fas fa-cogs"></i> Manajemen Ruang
+                </a>
+            </li>
+            <li class="mt-auto">
+                <form action="{{ route('logout') }}" method="POST" class="mt-5">
+                    @csrf
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
 
     <div class="main-content">
         <header>
             <h1 style="margin-bottom: 30px; color: #4b2327;">Manajemen Ruang</h1>
         </header>
 
-        <!-- Form Tambah Data -->
         <form action="{{ route('ruang.store') }}" method="POST">
             @csrf
             <div class="filter-container">
                 <div class="filter-group">
                     <input type="text" name="kode" placeholder="Masukkan Kode" required />
                 </div>
-
                 <div class="filter-group">
                     <input type="text" name="kapasitas" placeholder="Masukkan Kapasitas" required />
                 </div>
-
                 <div class="filter-group">
                     <input type="text" name="prodi" placeholder="Masukkan Prodi" required />
                 </div>
-
                 <div class="add-button">
                     <button type="submit">Tambahkan</button>
                 </div>
             </div>
         </form>
 
-        <!-- Tabel Data Ruang -->
         <div class="table-container">
             <table>
                 <thead>
@@ -304,56 +287,17 @@
                         <td>{{ $ruang->kode }}</td>
                         <td>{{ $ruang->kapasitas }}</td>
                         <td>
-                            <span class="status-badge {{ strtolower($ruang->status) == 'disetujui' ? 'status-available' : 'status-unavailable' }}">
-                                {{ strtolower($ruang->status) == 'disetujui' ? 'Disetujui' : 'Tidak Disetujui' }}
+                            <span class="status-badge {{ $ruang->status == 'Tersedia' ? 'status-available' : 'status-unavailable' }}">
+                                {{ $ruang->status }}
                             </span>
                         </td>
                         <td>{{ $ruang->prodi }}</td>
                         <td>
-                            <!-- Logic based on user role -->
-                            @if(auth()->user()->role == 'bagianakd')
-                                <!-- Bagian Akademik: hanya bisa mengajukan ulang jika status tidak disetujui -->
-                                @if($ruang->status == 'Tidak Disetujui')
-                                    <form action="{{ route('ruang.ajukanUlang', $ruang->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success">Ajukan</button>
-                                    </form>
-                                @else
-                                    <span class="badge badge-secondary">Sudah Diajukan</span>
-                                @endif
-                            @elseif(auth()->user()->role == 'dekan')
-                                <!-- Dekan: bisa menyetujui atau menolak -->
-                                @if($ruang->status == 'Tidak Disetujui')
-                                    <form action="{{ route('ruang.toggleStatus', $ruang->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-success">Setujui</button>
-                                    </form>
-                                    <form action="{{ route('ruang.reject', $ruang->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-danger">Tolak</button>
-                                    </form>
-                                @else
-                                    <form action="{{ route('ruang.toggleStatus', $ruang->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-danger">Tandai Tidak Disetujui</button>
-                                    </form>
-                                @endif
-                            @endif
-
-                            <!-- Tombol Edit -->
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal"
-                                onclick="editRuang({{ $ruang->id }}, '{{ $ruang->prodi }}')">Edit</button>
-
-                            <!-- Tombol Hapus -->
+                            <a href="{{ route('ruang.edit', $ruang->id) }}" class="btn btn-primary">Edit</a>
                             <form action="{{ route('ruang.destroy', $ruang->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger delete-button">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" alt="Hapus">
-                                </button>
+                                <button type="submit" class="btn btn-danger">Hapus</button>
                             </form>
                         </td>
                     </tr>
@@ -363,58 +307,12 @@
         </div>
     </div>
 
-    <!-- Modal Edit Program Studi -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Program Studi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editForm" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-3">
-                            <label for="prodi" class="form-label">Program Studi</label>
-                            <input type="text" name="prodi" id="prodi" class="form-control" required>
-                        </div>
-                        <div class="mb-3 text-center">
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz4fnFO9gybKchDd8f+w3K8B4Jd7mNoRcd6z5r+68X5a8J82zfpBo+zVXy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-cuTe0GpOikP0TVtVo5jFjhAo2e5lvH6V5aF6p0ZJp3l0lQb2s7jB0WhGgZY4STio"
+        crossorigin="anonymous"></script>
 
-    <script>
-        // Function to handle "Ajukan" button with SweetAlert confirmation
-        function ajukanRuang(id) {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda ingin mengajukan ruang ini?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Proceed with the form submission
-                    document.querySelector('form[action*="' + id + '"]').submit();
-                }
-            });
-        }
-
-        // Function to handle "Edit" button
-        function editRuang(id, prodi) {
-            document.getElementById('editForm').action = '/bagianakd/ruang/' + id;
-            document.getElementById('prodi').value = prodi;
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
- 
