@@ -22,6 +22,7 @@ class RuangController extends Controller
             // Mengirim data ke view
             return view('bagianakd.ruang', compact('ruangs')); // Menampilkan data di view
         } catch (\Exception $e) {
+            // Mengirim pesan error jika gagal mengambil data
             return redirect()->back()->withErrors(['error' => 'Gagal mengambil data ruang: ' . $e->getMessage()]);
         }
     }
@@ -32,8 +33,9 @@ class RuangController extends Controller
     public function create()
     {
         try {
-            return view('bagianakd.create');
+            return view('bagianakd.create'); // Menampilkan form untuk menambah ruang
         } catch (\Exception $e) {
+            // Menangani error jika gagal membuka halaman form tambah ruang
             return redirect()->route('ruang.index')->withErrors(['error' => 'Gagal membuka halaman tambah ruang: ' . $e->getMessage()]);
         }
     }
@@ -64,11 +66,11 @@ class RuangController extends Controller
         }
 
         try {
-            // Simpan data ke tabel 'ruangs'
+            // Simpan data ruang baru dengan status 'Pending'
             Ruang::create([
                 'kode' => $request->kode,
                 'kapasitas' => $request->kapasitas,
-                'status' => 'Tidak Disetujui',  // Status awal adalah 'Tidak Disetujui'
+                'status' => 'Pending', // Status awal menjadi 'Pending'
                 'prodi' => $request->prodi,
             ]);
 
@@ -89,6 +91,7 @@ class RuangController extends Controller
             $ruang = Ruang::findOrFail($id); // Cari data berdasarkan ID
             return view('bagianakd.edit', compact('ruang')); // Kirim data ke view edit
         } catch (\Exception $e) {
+            // Menangani error jika data ruang tidak ditemukan
             return redirect()->route('ruang.index')->withErrors(['error' => 'Ruang tidak ditemukan: ' . $e->getMessage()]);
         }
     }
@@ -171,7 +174,7 @@ class RuangController extends Controller
             }
 
             // Update status ruang menjadi 'Disetujui'
-            $ruang->status = 'Disetujui'; // Ganti sesuai dengan logika status persetujuan
+            $ruang->status = 'Disetujui';
             $ruang->save(); // Simpan perubahan ke database
 
             // Log perubahan status
@@ -199,7 +202,7 @@ class RuangController extends Controller
             }
 
             // Update status ruang menjadi 'Ditolak'
-            $ruang->status = 'Ditolak'; // Ganti status menjadi 'Ditolak'
+            $ruang->status = 'Ditolak';
             $ruang->save(); // Simpan perubahan ke database
 
             // Log perubahan status

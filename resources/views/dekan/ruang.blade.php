@@ -108,10 +108,14 @@
             border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .add-button button:hover {
             background-color: #6b3338;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .table-container {
@@ -167,16 +171,57 @@
             background-color: #ffebee;
             color: #c62828;
         }
+
+        /* Custom Button Styling (Login and Logout) */
+        .logout-button {
+            width: 100%;
+            padding: 15px 25px;
+            background: #f44336; /* Warna merah terang */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        box-shadow: 0 3px 10rpx rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: #d32f2f; /* Warna merah lebih gelap saat hover */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-button i {
+            margin-right: 10px;
+        }
     </style>
 </head>
 
 <body>
     <div class="sidebar">
-        <h1>Menu</h1>
-        <ul>
-            <li><a href="{{ route('ruang.index') }}">Data Ruang</a></li>
-            <li><a href="{{ route('ruang.create') }}">Tambah Ruang</a></li>
-            <li><a href="#">Lainnya</a></li>
+        <h1>PASTI SIAP</h1>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('dekan.dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('dekan.ruang') }}">
+                    <i class="fas fa-cogs"></i> Data Ruang
+                </a>
+            </li>
+            <li class="mt-auto">
+                <form action="{{ route('logout') }}" method="POST" class="mt-5">
+                    @csrf
+                    <button type="submit" class="logout-button">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </li>
         </ul>
     </div>
 

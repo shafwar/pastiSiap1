@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Ruang Kelas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Global Styling */
@@ -79,16 +78,17 @@
             background-color: #f8f9fa;
         }
 
-        /* Form Styling */
+        /* Filter Styling */
         .filter-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-bottom: 20px;
             align-items: center;
         }
 
-        .filter-group input {
+        .filter-group input,
+        .filter-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -96,10 +96,11 @@
             background-color: white;
         }
 
+        /* Add Button Styling */
         .add-button {
             display: flex;
             justify-content: end;
-            grid-column: span 3;
+            grid-column: span 4;
             margin-top: 20px;
         }
 
@@ -172,51 +173,11 @@
             color: #c62828;
         }
 
-        /* Button Hover Effects */
-        .btn-danger, .btn-primary {
-            position: relative;
-            overflow: hidden;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: transform 0.4s ease, box-shadow 0.3s ease;
-        }
-
-        .btn-danger:hover, .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-danger::after, .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
-        }
-
-        .btn-danger:hover::after, .btn-primary:hover::after {
-            animation: ripple 1s ease-out;
-        }
-
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: scale(20, 20);
-                opacity: 0;
-            }
+        /* Custom CSS untuk kolom Cari Kode Ruangan dan Cari Prodi */
+        #kodeFilter,
+        #prodiFilter {
+            width: 200px; /* Set lebar kolom yang konsisten */
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -252,6 +213,23 @@
             <h1 style="margin-bottom: 30px; color: #4b2327;">Manajemen Ruang</h1>
         </header>
 
+        <!-- Filter Kode Ruangan dan Prodi -->
+        <div class="mb-4">
+            <div style="display: flex; gap: 15px;">
+                <input type="text" id="kodeFilter" class="form-control" placeholder="Kode Ruangan" onkeyup="filter()">
+                <select id="prodiFilter" class="form-control" onchange="filter()">
+                    <option value="">Cari Prodi</option>
+                    <option value="Informatika">Informatika</option>
+                    <option value="Statistika">Statistika</option>
+                    <option value="Bioteknologi">Bioteknologi</option>
+                    <option value="Matematika">Matematika</option>
+                    <option value="Kimia">Kimia</option>
+                    <option value="Fisika">Fisika</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Form Input Ruang -->
         <form action="{{ route('ruang.store') }}" method="POST">
             @csrf
             <div class="filter-container">
@@ -262,7 +240,15 @@
                     <input type="text" name="kapasitas" placeholder="Masukkan Kapasitas" required />
                 </div>
                 <div class="filter-group">
-                    <input type="text" name="prodi" placeholder="Masukkan Prodi" required />
+                    <select name="prodi" class="form-control" required>
+                        <option value="">Pilih Prodi</option>
+                        <option value="Informatika">Informatika</option>
+                        <option value="Statistika">Statistika</option>
+                        <option value="Bioteknologi">Bioteknologi</option>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Kimia">Kimia</option>
+                        <option value="Fisika">Fisika</option>
+                    </select>
                 </div>
                 <div class="add-button">
                     <button type="submit">Tambahkan</button>
@@ -270,8 +256,9 @@
             </div>
         </form>
 
+        <!-- Tabel Data Ruang -->
         <div class="table-container">
-            <table>
+            <table id="ruangTable">
                 <thead>
                     <tr>
                         <th>Kode</th>
@@ -294,11 +281,7 @@
                         <td>{{ $ruang->prodi }}</td>
                         <td>
                             <a href="{{ route('ruang.edit', $ruang->id) }}" class="btn btn-primary">Edit</a>
-                            <form action="{{ route('ruang.destroy', $ruang->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ route('ruang.destroy', $ruang->id) }}', '{{ $ruang->kode }}', '{{ $ruang->kapasitas }}', '{{ $ruang->prodi }}')">Hapus</button>
                         </td>
                     </tr>
                     @endforeach
@@ -307,14 +290,61 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-        integrity="sha384-oBqDVmMz4fnFO9gybKchDd8f+w3K8B4Jd7mNoRcd6z5r+68X5a8J82zfpBo+zVXy" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
-        integrity="sha384-cuTe0GpOikP0TVtVo5jFjhAo2e5lvH6V5aF6p0ZJp3l0lQb2s7jB0WhGgZY4STio"
-        crossorigin="anonymous"></script>
+    <script>
+        // Filter function
+        function filter() {
+            let kodeInput = document.getElementById("kodeFilter").value.toLowerCase();
+            let prodiInput = document.getElementById("prodiFilter").value.toLowerCase();
+            let table = document.getElementById("ruangTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                let kode = cells[0].textContent.toLowerCase();
+                let prodi = cells[3].textContent.toLowerCase();
+
+                if (kode.includes(kodeInput) && prodi.includes(prodiInput)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        // Delete confirmation
+        function confirmDelete(url, kode, kapasitas, prodi) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: `Data ruang kelas dengan Kode Ruangan: ${kode}, Kapasitas: ${kapasitas}, dan Prodi: ${prodi} akan dihapus. Data yang dihapus tidak bisa dikembalikan!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+                    
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'DELETE';
+                    form.appendChild(methodField);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
 
 </body>
 
 </html>
-
- 
