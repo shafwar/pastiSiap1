@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\JadwalKuliah;
 use App\Models\Ruang;
 
 class DekanController extends Controller
@@ -21,19 +22,46 @@ class DekanController extends Controller
 
     public function approvals()
     {
-        return view('dekan.approvals');
+        // Ambil semua jadwal kuliah dengan status "Pending"
+        $jadwals = JadwalKuliah::where('status', 'pending')->get();
+        return view('dekan.approvals', compact('jadwals'));
     }
 
-    public function approveRuang($id)
+    public function kuliah()
+    {
+        // Fetch all schedules
+        $kuliah = JadwalKuliah::all();
+
+        // Group the schedules by 'day'
+        $groupedByDay = $kuliah->groupBy('day');
+
+        // Pass the grouped schedules to the view
+        return view('dekan.kuliah', compact('groupedByDay'));
+    }
+
+    public function approveJadwal($id)
     {
         try {
-            // Cari ruang berdasarkan ID dan ubah status menjadi 'Disetujui'
-            $ruang = Ruang::findOrFail($id);
-            $ruang->update(['status' => 'Disetujui']);
+            // Find the schedule by ID and change the status to 'Approved'
+            $jadwal = JadwalKuliah::findOrFail($id);
+            $jadwal->update(['status' => 'approved']);
 
-            return redirect()->route('dekan.ruang')->with('success', 'Ruang berhasil disetujui.');
+            return redirect()->route('dekan.jadwal')->with('success', 'Jadwal berhasil disetujui.');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Gagal menyetujui ruang: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Gagal menyetujui jadwal: ' . $e->getMessage()]);
+        }
+    }
+
+    public function rejectJadwal($id)
+    {
+        try {
+            // Find the schedule by ID and change the status to 'Rejected'
+            $jadwal = JadwalKuliah::findOrFail($id);
+            $jadwal->update(['status' => 'rejected']);
+
+            return redirect()->route('dekan.jadwal')->with('success', 'Jadwal berhasil ditolak.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Gagal menolak jadwal: ' . $e->getMessage()]);
         }
     }
 }

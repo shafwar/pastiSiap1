@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Dashboard Bagian Akademik')
+@section('title', 'Dashboard Pembimbing Akademik')
 
 @section('content')
 <div class="container mt-4">
@@ -110,123 +110,59 @@
         </div>
     </div>
 
-<!-- Action Buttons for Kuliah and IRS -->
-<div class="row mt-4">
-    <div class="col-md-6">
-        <a href="{{ route('dekan.kuliah') }}" class="animated-btn jadwal-kuliah w-100">
-            <span class="btn-content">
-                <i class="fas fa-calendar-alt me-2"></i>
-                Jadwal Kuliah
-            </span>
-        </a>
-    </div>
-    <div class="col-md-6">
-        <a href="{{ route('dekan.ruang') }}" class="animated-btn ruang w-100">
-            <span class="btn-content">
-                <i class="fas fa-clipboard-check me-2"></i>
-                RUANG
-            </span>
+    <!-- Button for Ruang -->
+    <div class="text-center mt-4">
+        <a href="{{ route('verifikasi-irs') }}" class="btn btn-danger btn-lg shadow-sm">
+            <i class="fas fa-home me-2"></i> Verifikasi IRS
         </a>
     </div>
 </div>
 
-<!-- Add these styles to your existing style section -->
+<!-- Add custom styles -->
 <style>
-    /* Keep your existing styles and add these new ones */
-    .animated-btn {
-        display: inline-block;
-        width: 100%;
-        padding: 15px 25px;
-        text-align: center;
-        text-decoration: none;
-        color: white;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-        font-weight: 600;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
     }
 
-    .jadwal-kuliah {
-        background: linear-gradient(45deg, #4b2327, #6d343a);
+    .info-section p {
+        margin-bottom: 0.5rem;
     }
 
-    .ruang {
-        background: linear-gradient(45deg, #2c3e50, #3498db);
+    .faculty {
+        font-size: 0.9rem;
+        color: #666;
     }
 
-    .animated-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
-        z-index: -1;
-        transform: translateX(-100%);
-        transition: all 0.3s ease;
+    .badge {
+        padding: 0.5em 1em;
     }
 
-    .animated-btn:hover {
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    /* Custom card colors */
+    .bg-primary {
+        background-color: #4b2327 !important;
     }
 
-    .animated-btn:hover::before {
-        transform: translateX(0);
+    .text-primary {
+        color: #4b2327 !important;
     }
 
-    .btn-content {
-        position: relative;
-        z-index: 2;
-        display: inline-block;
-        transition: all 0.3s ease;
-    }
-
-    .animated-btn:hover .btn-content {
-        transform: scale(1.05);
-    }
-
-    .animated-btn:active {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
-    .animated-btn:hover i {
-        animation: bounce 0.5s ease infinite;
-    }
-
-    @keyframes bounce {
-        0%, 100% {
+    /* Animated stats */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
             transform: translateY(0);
         }
-        50% {
-            transform: translateY(-3px);
-        }
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .animated-btn {
-            margin-bottom: 10px;
-            padding: 12px 20px;
-        }
-    }
-
-    /* Additional animation for smooth appearance */
-    .animated-btn {
-        animation: fadeInUp 0.5s ease-out backwards;
-    }
-
-    .jadwal-kuliah {
-        animation-delay: 0.1s;
-    }
-
-    .ruang {
-        animation-delay: 0.2s;
+    .card-body h2 {
+        animation: fadeInUp 0.5s ease-out;
     }
 </style>

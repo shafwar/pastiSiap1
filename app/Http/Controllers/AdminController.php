@@ -31,6 +31,11 @@ class AdminController extends Controller
         return $this->authorizeAndLoadDashboard('dekan', 'dekan.dashboard');
     }
 
+    public function pembimbingakademik()
+    {
+        return $this->authorizeAndLoadDashboard('pembimbingakademik', 'pembimbingakademik.dashboard');
+    }
+
     // Fungsi untuk memeriksa role dan memuat halaman dashboard
     private function authorizeAndLoadDashboard(string $expectedRole, string $viewName)
     {

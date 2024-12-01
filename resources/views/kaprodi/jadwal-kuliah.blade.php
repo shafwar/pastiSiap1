@@ -24,7 +24,6 @@
             <div class="d-flex">
                 <!-- Tabel Jadwal Kuliah -->
                 <div class="col-md-8" id="jadwal">
-                    
                     <div class="table-responsive">
                         <table class="table table-bordered table-schedule">
                             <thead>
@@ -68,6 +67,11 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Send to Approve Button -->
+            <div class="d-flex justify-content-end mt-3">
+                <button id="send-approval-btn" class="btn btn-primary">Send to Approve</button>
+            </div>
         </div>
     </div>
 </div>
@@ -79,17 +83,8 @@
     document.addEventListener("DOMContentLoaded", function () {
         // Enable sorting on the available courses list
         new Sortable(document.getElementById("courses-list"), {
-            group: "shared",  // Allow drag and drop from the list to the schedule
-            animation: 150,
-            onEnd: function (evt) {
-                const draggedCourse = evt.item;
-                const targetCell = document.querySelector(`.schedule-cell[data-day="${evt.to.id}"]`);
-                
-                // Add the dragged course to the schedule cell
-                if (targetCell) {
-                    targetCell.innerHTML = draggedCourse.innerHTML;
-                }
-            }
+            group: "shared",
+            animation: 150
         });
 
         // Enable sorting on the schedule cells
@@ -97,14 +92,53 @@
         scheduleCells.forEach(cell => {
             new Sortable(cell, {
                 group: "shared",
-                animation: 150,
-                onEnd: function (evt) {
-                    const draggedCourse = evt.item;
-                    if (draggedCourse) {
-                        // Move the dragged course to the new cell in the schedule
-                        evt.target.appendChild(draggedCourse);
+                animation: 150
+            });
+        });
+
+        // Handle "Send to Approve" button
+        document.getElementById("send-approval-btn").addEventListener("click", function () {
+            // Collect schedule data
+            const scheduleData = [];
+            const rows = document.querySelectorAll(".table-schedule tbody tr");
+
+            rows.forEach((row) => {
+                const timeSlot = row.cells[0].textContent.trim(); // Get time from the first cell
+                const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
+
+                days.forEach((day, dayIndex) => {
+                    const cell = row.cells[dayIndex + 1]; // Skip the first column
+                    const course = cell.textContent.trim(); // Get course name
+
+                    if (course) {
+                        scheduleData.push({
+                            mata_kuliah: course,
+                            day: day,
+                            time: timeSlot,
+                            status: 'pending' // Default status for submission
+                        });
                     }
+                });
+            });
+
+            // Send data to the server
+            fetch("{{ route('kaprodi.sendApproval') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ schedule: scheduleData })
+            }).then(response => {
+                if (response.ok) {
+                    alert("Jadwal has been sent for approval.");
+                    location.reload();
+                } else {
+                    alert("Failed to send jadwal.");
                 }
+            }).catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred.");
             });
         });
     });

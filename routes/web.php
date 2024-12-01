@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RuangController;
 use App\Http\Controllers\KaprodiController;
 use App\Http\Controllers\DekanController; // Tambahkan controller untuk Dekan
+use App\Http\Controllers\PembimbingAkademikController;
 use Illuminate\Support\Facades\Route;
 
 // Rute untuk user tamu (belum login)
@@ -26,13 +27,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
     // Rute untuk Kaprodi
+    // Rute untuk Kaprodi
     Route::middleware(['userAkses:kaprodi'])->group(function () {
         Route::get('/admin/kaprodi', [AdminController::class, 'kaprodi'])->name('kaprodi.dashboard');
         Route::get('/kaprodi/jadwal-kuliah', [KaprodiController::class, 'jadwalKuliah'])->name('jadwal.kuliah');
-        Route::get('/kaprodi/verifikasi-irs', function () {
-            return view('kaprodi.verifikasi-irs');
-        })->name('verifikasi.irs');
+        Route::post('/kaprodi/sendApproval', [KaprodiController::class, 'sendApproval'])->name('kaprodi.sendApproval');
     });
+
 
     // Rute untuk Bagian Akademik
     Route::middleware(['userAkses:bagianakd'])->group(function () {
@@ -67,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['userAkses:dekan'])->group(function () {
         // Dashboard Dekan
         Route::get('/admin/dekan', [AdminController::class, 'dekan'])->name('dekan.dashboard');
-        
+        Route::get('dekan/kuliah', [DekanController::class, 'kuliah'])->name('dekan.kuliah');
         // Dekan
         Route::get('dekan/ruang', [DekanController::class, 'ruang'])->name('dekan.ruang');
         Route::get('/dekan/approvals', [DekanController::class, 'approvals'])->name('dekan.approvals');
@@ -80,6 +81,11 @@ Route::middleware(['auth'])->group(function () {
 
         // **Rute untuk Menolak Ruang** - Menambahkan rute penolakan ruang oleh Dekan
         Route::post('/dekan/reject/{id}', [RuangController::class, 'reject'])->name('dekan.reject'); // Aksi penolakan ruang
+    });
+
+    Route::middleware(['userAkses:pembimbingakademik'])->group(function () {
+        Route::get('/admin/pembimbingakademik', [AdminController::class, 'pembimbingakademik'])->name('pembimbingakademik.dashboard');
+        Route::get('/pembimbingakademik/verifikasi-irs', [PembimbingAkademikController::class, 'verifikasiIRS'])->name('verifikasi-irs');
     });
 
     // Logout dengan AuthController

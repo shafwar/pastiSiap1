@@ -26,6 +26,12 @@ class DummyUsersSeeder extends Seeder
                 'role' => 'bagianakd',
             ],
             [
+                'name' => 'PembimbingAkademik',
+                'email' => 'pembimbingakademik@gmail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'pembimbingakademik',
+            ],
+            [
                 'name' => 'Mas Marketing',
                 'email' => 'marketing@gmail.com',
                 'password' => Hash::make('password_marketing'),

@@ -112,22 +112,16 @@
 
 <!-- Action Buttons for Kuliah and IRS -->
 <div class="row mt-4">
-    <div class="col-md-6">
-        <a href="{{ route('jadwal.kuliah') }}" class="animated-btn jadwal-kuliah w-100">
+    <div class="col-md-15 d-flex justify-content-center">
+        <a href="{{ route('jadwal.kuliah') }}" class="animated-btn jadwal-kuliah w-100 text-center">
             <span class="btn-content">
                 <i class="fas fa-calendar-alt me-2"></i>
                 Jadwal Kuliah
             </span>
         </a>
     </div>
-    <div class="col-md-6">
-        <a href="{{ route('verifikasi.irs') }}" class="animated-btn verifikasi-irs w-100">
-            <span class="btn-content">
-                <i class="fas fa-clipboard-check me-2"></i>
-                Verifikasi IRS
-            </span>
-        </a>
-    </div>
+
+    
 </div>
 
 <!-- Add these styles to your existing style section -->
