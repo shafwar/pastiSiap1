@@ -22,9 +22,7 @@ class DekanController extends Controller
 
     public function approvals()
     {
-        // Ambil semua jadwal kuliah dengan status "Pending"
-        $jadwals = JadwalKuliah::where('status', 'pending')->get();
-        return view('dekan.approvals', compact('jadwals'));
+        return view('dekan.approvals');
     }
 
     public function kuliah()
@@ -37,6 +35,19 @@ class DekanController extends Controller
 
         // Pass the grouped schedules to the view
         return view('dekan.kuliah', compact('groupedByDay'));
+    }
+
+    public function approveRuang($id)
+    {
+        try {
+            // Cari ruang berdasarkan ID dan ubah status menjadi 'Disetujui'
+            $ruang = Ruang::findOrFail($id);
+            $ruang->update(['status' => 'Disetujui']);
+
+            return redirect()->route('dekan.ruang')->with('success', 'Ruang berhasil disetujui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Gagal menyetujui ruang: ' . $e->getMessage()]);
+        }
     }
 
     public function approveJadwal($id)
@@ -64,4 +75,44 @@ class DekanController extends Controller
             return redirect()->back()->withErrors(['error' => 'Gagal menolak jadwal: ' . $e->getMessage()]);
         }
     }
+    public function approveAllJadwal()
+{
+    try {
+        JadwalKuliah::where('status', '!=', 'approved')->update(['status' => 'approved']);
+        return redirect()->route('dekan.jadwal')->with('success', 'Semua jadwal berhasil disetujui.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withErrors(['error' => 'Gagal menyetujui jadwal: ' . $e->getMessage()]);
+    }
+}
+
+public function rejectAllJadwal()
+{
+    try {
+        JadwalKuliah::where('status', '!=', 'rejected')->update(['status' => 'rejected']);
+        return redirect()->route('dekan.jadwal')->with('success', 'Semua jadwal berhasil ditolak.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withErrors(['error' => 'Gagal menolak jadwal: ' . $e->getMessage()]);
+    }
+}
+
+public function approveAllRuang()
+{
+    try {
+        Ruang::where('status', '!=', 'Disetujui')->update(['status' => 'Disetujui']);
+        return redirect()->route('dekan.ruang')->with('success', 'Semua ruang berhasil disetujui.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withErrors(['error' => 'Gagal menyetujui ruang: ' . $e->getMessage()]);
+    }
+}
+
+public function rejectAllRuang()
+{
+    try {
+        Ruang::where('status', '!=', 'Ditolak')->update(['status' => 'Ditolak']);
+        return redirect()->route('dekan.ruang')->with('success', 'Semua ruang berhasil ditolak.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withErrors(['error' => 'Gagal menolak ruang: ' . $e->getMessage()]);
+    }
+}
+
 }

@@ -11,15 +11,12 @@ class JadwalKuliah extends Model
 
     protected $table = 'jadwal_kuliah';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'mata_kuliah',
         'day',
         'time',
+        'sks',
+        'ruang',
         'status',
     ];
 }

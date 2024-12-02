@@ -57,15 +57,18 @@
                 <div class="col-md-4" id="available-courses">
                     <h5>Pilih Mata Kuliah</h5>
                     <ul id="courses-list" class="list-group">
-                        <li class="list-group-item" data-id="algoritma">Algoritma</li>
-                        <li class="list-group-item" data-id="matematika">Matematika</li>
-                        <li class="list-group-item" data-id="pemrograman">Pemrograman</li>
-                        <li class="list-group-item" data-id="struktur-data">Struktur Data</li>
-                        <li class="list-group-item" data-id="jaringan">Jaringan</li>
-                        <li class="list-group-item" data-id="ai">AI</li>
-                        <li class="list-group-item" data-id="basis-data">Basis Data</li>
+                        @foreach($mataKuliah as $course)
+                            <li class="list-group-item" 
+                                data-id="{{ $course->mata_kuliah_id }}" 
+                                data-ruang="{{ $course->ruang }}">
+                                {{ $course->mata_kuliah_name }} 
+                                (SKS: {{ $course->sks }})
+                                (Ruang: {{$course->ruang}})
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
+
             </div>
 
             <!-- Send to Approve Button -->
@@ -98,49 +101,48 @@
 
         // Handle "Send to Approve" button
         document.getElementById("send-approval-btn").addEventListener("click", function () {
-            // Collect schedule data
-            const scheduleData = [];
-            const rows = document.querySelectorAll(".table-schedule tbody tr");
+        const scheduleData = [];
+        const rows = document.querySelectorAll(".table-schedule tbody tr");
 
-            rows.forEach((row) => {
-                const timeSlot = row.cells[0].textContent.trim(); // Get time from the first cell
-                const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
+        rows.forEach((row) => {
+            const timeSlot = row.cells[0].textContent.trim();
+            const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
 
-                days.forEach((day, dayIndex) => {
-                    const cell = row.cells[dayIndex + 1]; // Skip the first column
-                    const course = cell.textContent.trim(); // Get course name
+            days.forEach((day, dayIndex) => {
+                const cell = row.cells[dayIndex + 1];
+                const courseElement = cell.querySelector('.list-group-item');
 
-                    if (course) {
-                        scheduleData.push({
-                            mata_kuliah: course,
-                            day: day,
-                            time: timeSlot,
-                            status: 'pending' // Default status for submission
-                        });
-                    }
-                });
-            });
-
-            // Send data to the server
-            fetch("{{ route('kaprodi.sendApproval') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({ schedule: scheduleData })
-            }).then(response => {
-                if (response.ok) {
-                    alert("Jadwal has been sent for approval.");
-                    location.reload();
-                } else {
-                    alert("Failed to send jadwal.");
+                if (courseElement) {
+                    const courseName = courseElement.textContent.trim().split('(SKS')[0].trim();
+                    scheduleData.push({
+                        mata_kuliah: courseName,
+                        day: day,
+                        time: timeSlot,
+                        status: 'pending'
+                    });
                 }
-            }).catch(error => {
-                console.error("Error:", error);
-                alert("An error occurred.");
             });
         });
+
+        fetch("{{ route('kaprodi.sendApproval') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ schedule: scheduleData })
+        }).then(response => {
+            if (response.ok) {
+                alert("Jadwal has been sent for approval.");
+                location.reload();
+            } else {
+                alert("Failed to send jadwal.");
+            }
+        }).catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred.");
+        });
+    });
     });
 </script>
 

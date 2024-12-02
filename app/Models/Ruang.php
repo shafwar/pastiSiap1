@@ -39,4 +39,10 @@ class Ruang extends Model
      * Jika Anda ingin menonaktifkan timestamps, tambahkan properti `$timestamps = false`.
      */
     public $timestamps = true;
+
+    public function mataKuliah()
+    {
+        return $this->belongsTo(MataKuliah::class, 'kode', 'ruang');
+    }
+
 }

@@ -146,10 +146,6 @@
             border: 1px solid #eee;
         }
 
-        tbody td:last-child {
-            text-align: center;
-        }
-
         .status-badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -166,6 +162,38 @@
         .status-unavailable {
             background-color: #ffebee;
             color: #c62828;
+        }
+
+        .bulk-action-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .bulk-action-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-approve-all {
+            background-color: #28a745;
+        }
+
+        .btn-reject-all {
+            background-color: #dc3545;
+        }
+
+        .btn-approve-all:hover {
+            background-color: #218838;
+        }
+
+        .btn-reject-all:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -194,7 +222,6 @@
                         <th>Kapasitas</th>
                         <th>Status</th>
                         <th>Prodi</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -208,31 +235,20 @@
                             </span>
                         </td>
                         <td>{{ $ruang->prodi }}</td>
-                        <td>
-                            <!-- Tombol Setujui hanya ada pada baris data yang tidak tersedia -->
-                            @if($ruang->status != 'Tersedia')
-                            <form action="{{ route('dekan.approve', $ruang->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('POST')
-                                <button type="submit" class="btn btn-success">Setujui</button>
-                            </form>
-
-                            <!-- Tombol Tolak -->
-                            <form action="{{ route('dekan.reject', $ruang->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('POST')
-                                <button type="submit" class="btn btn-danger">Tolak</button>
-                            </form>
-                            @endif
-                        </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+            <!-- Bulk action buttons -->
+            <div class="bulk-action-buttons">
+                <form action="{{ route('dekan.approveAllRuang') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn-approve-all">Setujui Semua</button>
+                </form>
 
-</html>
+                <form action="{{ route('dekan.rejectAllRuang') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn-reject-all">Tolak Semua</button>
+                </form>
+           

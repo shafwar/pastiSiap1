@@ -86,8 +86,10 @@
             border: 1px solid #eee;
         }
 
-        .action-buttons button {
-            margin: 0 5px;
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
         }
     </style>
 </head>
@@ -97,7 +99,7 @@
         <h1>Menu</h1>
         <ul>
             <li><a href="#">Jadwal Kuliah</a></li>
-            <li><a href="#">Dashboard</a></li>
+            <li><a href="dekan.dashboard">Dashboard</a></li>
             <li><a href="#">Pengaturan</a></li>
         </ul>
     </div>
@@ -128,43 +130,46 @@
                         <th>Rabu</th>
                         <th>Kamis</th>
                         <th>Jumat</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($groupedByDay as $day => $schedules)
-                        <tr>
-                            <td>{{ ucfirst($day) }}</td>
-                            <td>
-                                @foreach($schedules as $schedule)
-                                    <p>{{ $schedule->time }}</p>
-                                @endforeach
-                            </td>
-                            @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat'] as $weekday)
-                                <td>
-                                    @foreach($schedules as $schedule)
-                                        @if($schedule->day == $weekday)
-                                            <p>{{ $schedule->mata_kuliah }} ({{ $schedule->time }})</p>
-                                        @endif
-                                    @endforeach
-                                </td>
+                    <tr>
+                        <td>{{ ucfirst($day) }}</td>
+                        <td>
+                            @foreach($schedules as $schedule)
+                            <p>{{ $schedule->time }}</p>
                             @endforeach
-                            <td class="action-buttons">
-                                @foreach($schedules as $schedule)
-                                    <form action="{{ route('dekan.approve', $schedule->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <button class="btn btn-success btn-sm">Approve</button>
-                                    </form>
-                                    <form action="{{ route('dekan.reject', $schedule->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <button class="btn btn-danger btn-sm">Reject</button>
-                                    </form>
-                                @endforeach
-                            </td>
-                        </tr>
+                        </td>
+                        @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat'] as $weekday)
+                        <td>
+                            @foreach($schedules as $schedule)
+                            @if($schedule->day == $weekday)
+                            <p>
+                                <strong>{{ $schedule->mata_kuliah }}</strong> <br>
+                                Time: {{ $schedule->time }}<br>
+                                SKS: {{ $schedule->sks }}<br>
+                                Room: {{ $schedule->ruang }}
+                            </p>
+                            @endif
+                            @endforeach
+                        </td>
+                        @endforeach
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
+
+            <div class="button-container">
+                <form action="{{ route('dekan.approveAllJadwal') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-success">Setujui Semua</button>
+                </form>
+                <form action="{{ route('dekan.rejectAllJadwal') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Tolak Semua</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>

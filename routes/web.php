@@ -66,21 +66,18 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute untuk Dekan
     Route::middleware(['userAkses:dekan'])->group(function () {
-        // Dashboard Dekan
-        Route::get('/admin/dekan', [AdminController::class, 'dekan'])->name('dekan.dashboard');
-        Route::get('dekan/kuliah', [DekanController::class, 'kuliah'])->name('dekan.kuliah');
-        // Dekan
-        Route::get('dekan/ruang', [DekanController::class, 'ruang'])->name('dekan.ruang');
-        Route::get('/dekan/approvals', [DekanController::class, 'approvals'])->name('dekan.approvals');
-        
-        // Rute untuk persetujuan ruang
-        Route::post('/dekan/approve/{id}', [RuangController::class, 'approve'])->name('dekan.approve'); // Aksi persetujuan ruang
+        Route::get('/admin/dekan', [DekanController::class, 'index'])->name('dekan.dashboard');
+        Route::get('/dekan/ruang', [DekanController::class, 'ruang'])->name('dekan.ruang');
+        Route::get('/dekan/kuliah', [DekanController::class, 'kuliah'])->name('dekan.kuliah');
+        Route::get('/dekan/kuliah', [DekanController::class, 'kuliah'])->name('dekan.jadwal');
+        Route::post('/dekan/approve/jadwal/{id}', [DekanController::class, 'approveJadwal'])->name('dekan.approve');
+        Route::post('/dekan/reject/jadwal/{id}', [DekanController::class, 'rejectJadwal'])->name('dekan.reject');
+        Route::post('/dekan/approve/ruang/{id}', [DekanController::class, 'approveRuang'])->name('dekan.approveRuang');
+        Route::post('/dekan/approve-all-jadwal', [DekanController::class, 'approveAllJadwal'])->name('dekan.approveAllJadwal');
+        Route::post('/dekan/reject-all-jadwal', [DekanController::class, 'rejectAllJadwal'])->name('dekan.rejectAllJadwal');
+        Route::post('/dekan/approve-all-ruang', [DekanController::class, 'approveAllRuang'])->name('dekan.approveAllRuang');
+        Route::post('/dekan/reject-all-ruang', [DekanController::class, 'rejectAllRuang'])->name('dekan.rejectAllRuang');
 
-        // Rute untuk mengubah status ruang (Disetujui / Tidak Disetujui)
-        Route::put('/dekan/ruang/status/{id}', [RuangController::class, 'toggleStatus'])->name('ruang.toggleStatus'); // Mengubah status ruang
-
-        // **Rute untuk Menolak Ruang** - Menambahkan rute penolakan ruang oleh Dekan
-        Route::post('/dekan/reject/{id}', [RuangController::class, 'reject'])->name('dekan.reject'); // Aksi penolakan ruang
     });
 
     Route::middleware(['userAkses:pembimbingakademik'])->group(function () {
