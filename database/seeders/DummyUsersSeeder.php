@@ -56,6 +56,13 @@ class DummyUsersSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'role' => 'dekan',
             ],
+
+            [
+                'name' => 'Mahasiswa',
+                'email' => 'mahasiswa@gmail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'mahasiswa',
+            ],
         ];
 
         // Loop untuk memasukkan data jika email belum ada

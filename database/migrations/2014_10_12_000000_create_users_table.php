@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique(); // Email unik
             $table->timestamp('email_verified_at')->nullable(); // Waktu verifikasi email (opsional)
             $table->string('password'); // Password
-            $table->enum('role', ['bagianakd','pembimbingakademik', 'kaprodi', 'marketing', 'keuangan', 'dekan']) // Role pengguna
+            $table->enum('role', ['bagianakd','pembimbingakademik', 'kaprodi', 'marketing', 'keuangan','mahasiswa', 'dekan']) // Role pengguna
                   ->default('bagianakd');
             $table->rememberToken(); // Token untuk "remember me"
             $table->timestamps(); // Created at & Updated at timestamps

@@ -99,6 +99,7 @@ class SesiController extends Controller
             'marketing' => redirect('admin/marketing'),
             'dekan' => redirect('admin/dekan'),
             'pembimbingakademik' => redirect(to: 'admin/pembimbingakademik'),
+            'mahasiswa' => redirect(to: 'admin/mahasiswa'),
             default => redirect('/')->withErrors('Role tidak dikenal.'),
         };
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\RuangController;
 use App\Http\Controllers\KaprodiController;
 use App\Http\Controllers\DekanController; // Tambahkan controller untuk Dekan
 use App\Http\Controllers\PembimbingAkademikController;
+use App\Http\Controllers\MahasiswaController;
 use Illuminate\Support\Facades\Route;
 
 // Rute untuk user tamu (belum login)
@@ -69,7 +70,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/dekan', [DekanController::class, 'index'])->name('dekan.dashboard');
         Route::get('/dekan/ruang', [DekanController::class, 'ruang'])->name('dekan.ruang');
         Route::get('/dekan/kuliah', [DekanController::class, 'kuliah'])->name('dekan.kuliah');
-        Route::get('/dekan/kuliah', [DekanController::class, 'kuliah'])->name('dekan.jadwal');
         Route::post('/dekan/approve/jadwal/{id}', [DekanController::class, 'approveJadwal'])->name('dekan.approve');
         Route::post('/dekan/reject/jadwal/{id}', [DekanController::class, 'rejectJadwal'])->name('dekan.reject');
         Route::post('/dekan/approve/ruang/{id}', [DekanController::class, 'approveRuang'])->name('dekan.approveRuang');
@@ -83,6 +83,12 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['userAkses:pembimbingakademik'])->group(function () {
         Route::get('/admin/pembimbingakademik', [AdminController::class, 'pembimbingakademik'])->name('pembimbingakademik.dashboard');
         Route::get('/pembimbingakademik/verifikasi-irs', [PembimbingAkademikController::class, 'verifikasiIRS'])->name('verifikasi-irs');
+    });
+
+    Route::middleware(['userAkses:mahasiswa'])->group(function () {
+        Route::get('/admin/mahasiswa', [AdminController::class, 'mahasiswa'])->name('mahasiswa.dashboard');
+        Route::get('/mahasiswa/her-registrasi', [MahasiswaController::class, 'herRegistrasi'])->name('mahasiswa.her-registrasi');
+        Route::get('/mahasiswa/irs', [MahasiswaController::class, 'akademikIRS'])->name('mahasiswa.irs');
     });
 
     // Logout dengan AuthController
