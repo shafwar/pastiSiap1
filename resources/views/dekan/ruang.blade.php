@@ -4,42 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - PASTI SIAP</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Custom CSS -->
+    <title>Data Ruang Kelas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Global reset for body */
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        /* Sidebar styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
         .sidebar {
-            width: 220px;
-            height: 100vh;
-            background-color: #4b2327;
+            width: 250px;
+            background: linear-gradient(135deg, #4b2327 0%, #6b3338 100%);
             color: white;
-            position: fixed;
             padding: 20px;
-            top: 0;
+            height: 100vh;
+            position: fixed;
             left: 0;
-            z-index: 10;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar h1 {
             font-size: 1.5em;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
             padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar ul {
@@ -52,334 +54,170 @@
         }
 
         .sidebar ul li a {
-            color: white;
             text-decoration: none;
+            color: white;
             display: block;
-            padding: 12px 15px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: linear-gradient(to right, transparent 50%, rgba(255, 255, 255, 0.1) 50%);
+            background-size: 200% 100%;
+            background-position: left bottom;
             transition: all 0.3s ease;
-        }
-
-        .sidebar ul li a i {
-            margin-right: 10px;
-            width: 20px;
         }
 
         .sidebar ul li a:hover {
-            background-color: #6c2e36;
-            transform: translateX(5px);
+            background-position: right bottom;
+            transform: translateX(10px);
         }
 
-        .sidebar ul li a.active {
-            background-color: #6c2e36;
-            border-left: 4px solid #fff;
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 250px;
+            background-color: #f8f9fa;
         }
 
-        /* Content area styles */
-        .content {
-            margin-left: 240px;
-            padding: 20px 30px;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-        }
-
-        /* Header area */
-        .content-header {
-            background-color: white;
-            padding: 15px 25px;
-            margin: -20px -30px 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
+        .filter-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
             align-items: center;
         }
 
-        .content-header h2 {
-            margin: 0;
-            color: #4b2327;
-            font-size: 1.5em;
-        }
-
-        /* Card styles with animations */
-        .card {
-            border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+        .filter-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: white;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .add-button {
+            display: flex;
+            justify-content: end;
+            grid-column: span 3;
+            margin-top: 20px;
+        }
+
+        .add-button button {
+            padding: 10px 20px;
+            background-color: #4b2327;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-button button:hover {
+            background-color: #6b3338;
+            transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .card-header {
+        .table-container {
             background-color: white;
-            border-bottom: 1px solid #eee;
-            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 25px;
         }
 
-        /* Animated Button styles */
-        .btn-danger {
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        thead th {
             background-color: #4b2327;
-            border: none;
-            padding: 8px 20px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            text-align: left;
         }
 
-        .btn-danger:hover {
-            background-color: #6c2e36;
+        tbody tr:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-danger::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, .5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
+        tbody td {
+            padding: 15px 20px;
+            background-color: white;
+            border: 1px solid #eee;
         }
 
-        .btn-danger:hover::after {
-            animation: ripple 1s ease-out;
-        }
-
-        /* Fancy Button Styles */
-        .btn-fancy {
-            display: inline-block;
-            padding: 15px 25px;
+        tbody td:last-child {
             text-align: center;
-            text-decoration: none;
-            color: white;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            font-weight: bold;
-            margin: 10px 0;
         }
 
-        .btn-fancy.jadwal-kuliah {
-            background: linear-gradient(45deg, #4b2327, #6d343a);
-        }
-
-        .btn-fancy.verifikasi-irs {
-            background: linear-gradient(45deg, #2c3e50, #3498db);
-        }
-
-        .btn-fancy:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
-            z-index: -1;
-            transform: translateX(-100%);
-            transition: all 0.3s ease;
-        }
-
-        .btn-fancy:hover {
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-fancy:hover:before {
-            transform: translateX(0);
-        }
-
-        /* Profile image styles with animation */
-        .profile-pic {
-            position: relative;
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
             display: inline-block;
         }
 
-        .profile-pic img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+        .status-available {
+            background-color: #e8f5e9;
+            color: #2e7d32;
         }
 
-        .profile-pic:hover img {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .status-unavailable {
+            background-color: #ffebee;
+            color: #c62828;
         }
 
-        /* Stat Card Animation */
-        .stat-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px) scale(1.02);
-        }
-
-        .stat-card i {
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover i {
-            transform: scale(1.1);
-        }
-
-        /* Counter Animation */
-        .counter {
-            display: inline-block;
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        /* Pulse Animation */
-        .pulse-badge {
-            animation: pulse 2s infinite;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .content {
-                margin-left: 0;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .content.active {
-                margin-left: 240px;
-            }
-        }
-
-        /* Loading spinner */
-        .spinner-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Custom Button Styling (Login and Logout) */
+        .logout-button {
             width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Notifications with animation */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
             padding: 15px 25px;
-            border-radius: 4px;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: none;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
+            background: #f44336; /* Warna merah terang */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        box-shadow: 0 3px 10rpx rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        /* Animations */
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: scale(20, 20);
-                opacity: 0;
-            }
+        .logout-button:hover {
+            background: #d32f2f; /* Warna merah lebih gelap saat hover */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.05);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .logout-button i {
+            margin-right: 10px;
         }
     </style>
 </head>
 
 <body>
-    <!-- Loading Spinner -->
-    <div class="spinner-overlay">
-        <div class="spinner-border text-danger" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-
-    <!-- Notifications -->
-    <div class="notification" id="notification"></div>
-
-    <!-- Sidebar -->
     <div class="sidebar">
         <h1>PASTI SIAP</h1>
-        <ul>
-            <li>
-                <a href="{{ route('admin.index') }}" class="{{ request()->routeIs('admin.index') ? 'active' : '' }}">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('dekan.dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             </li>
-            
-            
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('dekan.ruang') }}">
+                    <i class="fas fa-cogs"></i> Data Ruang
+                </a>
+            </li>
             <li class="mt-auto">
                 <form action="{{ route('logout') }}" method="POST" class="mt-5">
                     @csrf
-                    <button type="submit" class="btn btn-danger w-100">
+                    <button type="submit" class="logout-button">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </form>
@@ -387,46 +225,59 @@
         </ul>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="content">
-        @yield('content')
+    <div class="main-content">
+        <header>
+            <h1 style="margin-bottom: 30px; color: #4b2327;">Data Ruang</h1>
+        </header>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kode</th>
+                        <th>Kapasitas</th>
+                        <th>Status</th>
+                        <th>Prodi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($ruangs as $ruang)
+                    <tr>
+                        <td>{{ $ruang->kode }}</td>
+                        <td>{{ $ruang->kapasitas }}</td>
+                        <td>
+                            <span class="status-badge {{ $ruang->status == 'Tersedia' ? 'status-available' : 'status-unavailable' }}">
+                                {{ $ruang->status }}
+                            </span>
+                        </td>
+                        <td>{{ $ruang->prodi }}</td>
+                        <td>
+                            <!-- Tombol Setujui hanya ada pada baris data yang tidak tersedia -->
+                            @if($ruang->status != 'Tersedia')
+                            <form action="{{ route('dekan.approve', $ruang->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('POST')
+                                <button type="submit" class="btn btn-success">Setujui</button>
+                            </form>
+
+                            <!-- Tombol Tolak -->
+                            <form action="{{ route('dekan.reject', $ruang->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('POST')
+                                <button type="submit" class="btn btn-danger">Tolak</button>
+                            </form>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Custom JavaScript for Animations -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
-
-            // Counter animation
-            const counters = document.querySelectorAll('.counter');
-            counters.forEach(counter => {
-                const target = parseInt(counter.innerText);
-                const duration = 1000;
-                const increment = target / (duration / 16);
-                let current = 0;
-
-                const updateCounter = () => {
-                    current += increment;
-                    if (current < target) {
-                        counter.innerText = Math.ceil(current);
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.innerText = target;
-                    }
-                };
-
-                updateCounter();
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
-</html> 
-
+</html>
